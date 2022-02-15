@@ -18,9 +18,10 @@
                                         <label>{{trans('file.Product Type')}} *</strong> </label>
                                         <div class="input-group">
                                             <select name="type" required class="form-control selectpicker" id="type">
-                                                <option value="standard">Standard</option>
-                                                <!-- <option value="combo">Combo</option>
-                                                <option value="digital">Digital</option>
+                                                <option value="standard">{{ trans('file.Standard') }}</option>
+                                                <option value="grade_b">{{ trans('file.Grade B') }}</option>
+                                                <option value="raw_material">{{ trans('file.Raw Material') }}</option>
+                                            <!-- <option value="digital">Digital</option>
                                                 <option value="service">Service</option> -->
                                             </select>
                                         </div>
@@ -195,6 +196,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{trans('file.Catcher Commission Rate')}}</strong> </label>
+                                        <input type="number" name="catch_commission_rate" class="form-control" step="any">
+                                    </div>
+                                </div>
                                 <!-- Not use -->
                                 {{-- <div class="col-md-4">
                                     <div class="form-group mt-3">
@@ -244,7 +251,7 @@
                                     </div>
                                 </div> --}}
                                 <div class="col-md-12 mt-3" id="batch-option">
-                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1">&nbsp; {{trans('file.This product has batch and expired date')}}</h5>
+                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1">&nbsp; {{trans('file.This product has batch and received date')}}</h5>
                                 </div>
                                 {{-- <div class="col-md-12 mt-3" id="imei-option">
                                     <h5><input name="is_imei" type="checkbox" id="is-imei" value="1">&nbsp; {{trans('file.This product has IMEI or Serial numbers')}}</h5>
@@ -278,11 +285,15 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <div class="col-md-4" id="promotion_price">
+                                        <div class="col-md-3" id="promotion_price">
                                             <label>{{trans('file.Promotional Price')}}</label>
                                             <input type="number" name="promotion_price" class="form-control" step="any" />
                                         </div>
-                                        <div class="col-md-4" id="start_date">
+                                        <div class="col-md-3" id="min_qty">
+                                            <label>{{trans('file.Minimum Quantity')}}</label>
+                                            <input type="number" name="min_qty" class="form-control" step="any" />
+                                        </div>
+                                        <div class="col-md-3" id="start_date">
                                             <div class="form-group">
                                                 <label>{{trans('file.Promotion Starts')}}</label>
                                                 <div class="input-group">
@@ -293,7 +304,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4" id="last_date">
+                                        <div class="col-md-3" id="last_date">
                                             <div class="form-group">
                                                 <label>{{trans('file.Promotion Ends')}}</label>
                                                 <div class="input-group">
@@ -332,6 +343,7 @@
     $("#variant-section").hide();
     $("#diffPrice-section").hide();
     $("#promotion_price").hide();
+    $("#min_qty").hide();
     $("#start_date").hide();
     $("#last_date").hide();
 
@@ -363,54 +375,54 @@
       branding:false
     });
 
-    $('select[name="type"]').on('change', function() {
-        if($(this).val() == 'combo'){
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            hide();
-            $("#combo").show(300);
-            $("input[name='price']").prop('disabled',true);
-            $("#is-variant").prop("checked", false);
-            $("#is-diffPrice").prop("checked", false);
-            $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
-        }
-        else if($(this).val() == 'digital'){
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            $("input[name='file']").prop('required',true);
-            hide();
-            $("#digital").show(300);
-            $("#combo").hide(300);
-            $("input[name='price']").prop('disabled',false);
-            $("#is-variant").prop("checked", false);
-            $("#is-diffPrice").prop("checked", false);
-            $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
-        }
-        else if($(this).val() == 'service') {
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            $("input[name='file']").prop('required',true);
-            hide();
-            $("#combo").hide(300);
-            $("#digital").hide(300);
-            $("input[name='price']").prop('disabled',false);
-            $("#is-variant").prop("checked", false);
-            $("#variant-section, #variant-option").hide(300);
-        }
-        else if($(this).val() == 'standard') {
-            $("input[name='cost']").prop('required',true);
-            $("select[name='unit_id']").prop('required',true);
-            $("input[name='file']").prop('required',false);
-            $("#cost").show(300);
-            $("#unit").show(300);
-            $("#alert-qty").show(300);
-            $("#variant-option").show(300);
-            $("#diffPrice-option").show(300);
-            $("#digital").hide(300);
-            $("#combo").hide(300);
-            $("input[name='price']").prop('disabled',false);
-        }
-    });
+    // $('select[name="type"]').on('change', function() {
+    //     if($(this).val() == 'combo'){
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         hide();
+    //         $("#combo").show(300);
+    //         $("input[name='price']").prop('disabled',true);
+    //         $("#is-variant").prop("checked", false);
+    //         $("#is-diffPrice").prop("checked", false);
+    //         $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
+    //     }
+    //     else if($(this).val() == 'digital'){
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         $("input[name='file']").prop('required',true);
+    //         hide();
+    //         $("#digital").show(300);
+    //         $("#combo").hide(300);
+    //         $("input[name='price']").prop('disabled',false);
+    //         $("#is-variant").prop("checked", false);
+    //         $("#is-diffPrice").prop("checked", false);
+    //         $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
+    //     }
+    //     else if($(this).val() == 'service') {
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         $("input[name='file']").prop('required',true);
+    //         hide();
+    //         $("#combo").hide(300);
+    //         $("#digital").hide(300);
+    //         $("input[name='price']").prop('disabled',false);
+    //         $("#is-variant").prop("checked", false);
+    //         $("#variant-section, #variant-option").hide(300);
+    //     }
+    //     else if($(this).val() == 'standard') {
+    //         $("input[name='cost']").prop('required',true);
+    //         $("select[name='unit_id']").prop('required',true);
+    //         $("input[name='file']").prop('required',false);
+    //         $("#cost").show(300);
+    //         $("#unit").show(300);
+    //         $("#alert-qty").show(300);
+    //         $("#variant-option").show(300);
+    //         $("#diffPrice-option").show(300);
+    //         $("#digital").hide(300);
+    //         $("#combo").hide(300);
+    //         $("input[name='price']").prop('disabled',false);
+    //     }
+    // });
 
     $('select[name="unit_id"]').on('change', function() {
 
@@ -587,11 +599,13 @@
         if ($(this).is(':checked')) {
             $("#starting_date").val($.datepicker.formatDate('dd-mm-yy', new Date()));
             $("#promotion_price").show(300);
+            $("#min_qty").show(300);
             $("#start_date").show(300);
             $("#last_date").show(300);
         }
         else {
             $("#promotion_price").hide(300);
+            $("#min_qty").hide(300);
             $("#start_date").hide(300);
             $("#last_date").hide(300);
         }

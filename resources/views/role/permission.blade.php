@@ -1061,6 +1061,18 @@
 								                </div>
 								            </div>
 						                </span>
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("catcher_team", $all_permission))
+							                    	<input type="checkbox" value="1" id="catcher_team" name="catcher_team" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="catcher_team" name="catcher_team">
+							                    	@endif
+								                    <label for="catcher_team" class="padding05">{{trans('file.Catcher Team')}} &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
 						                <span>
 								            <div aria-checked="false" aria-disabled="false">
 								                <div class="checkbox">

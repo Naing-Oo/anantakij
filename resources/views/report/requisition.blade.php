@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header mt-2">
-                <h3 class="text-center">{{trans('file.Sale Report')}}</h3>
+                <h3 class="text-center">{{trans('file.Requisition Report')}}</h3>
             </div>
             {!! Form::open(['route' => 'report.requisition', 'method' => 'post']) !!}
             <div class="row mb-3">

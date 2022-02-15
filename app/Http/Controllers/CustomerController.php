@@ -16,11 +16,7 @@ use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
@@ -37,11 +33,7 @@ class CustomerController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
@@ -53,12 +45,7 @@ class CustomerController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -68,10 +55,21 @@ class CustomerController extends Controller
                     return $query->where('is_active', 1);
                 }),
             ],
+            'id_card' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
-        $lims_customer_data = $request->all();
+        $lims_customer_data = $request->except('id_card');
         
         $lims_customer_data['is_active'] = true;
+
+        $image = $request->id_card;
+        if ($image) {
+            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
+            $imageName = preg_replace('/[^a-zA-Z0-9]/', '', $request['company_name']);
+            $imageName = $imageName . '.' . $ext;
+            $image->move('storage/images/customer', $imageName);
+            $lims_customer_data['id_card'] = $imageName;
+        }
+
         //creating user if given user access
         if(isset($lims_customer_data['user'])) {
             $this->validate($request, [
@@ -123,23 +121,6 @@ class CustomerController extends Controller
             return redirect('customer')->with('create_message', $message);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
@@ -152,13 +133,6 @@ class CustomerController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -168,9 +142,20 @@ class CustomerController extends Controller
                     return $query->where('is_active', 1);
                 }),
             ],
+            'id_card' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
 
-        $input = $request->all();
+        $input = $request->except('id_card');
+
+        $image = $request->id_card;
+        if ($image) {
+            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
+            $imageName = preg_replace('/[^a-zA-Z0-9]/', '', $request['company_name']);
+            $imageName = $imageName . '.' . $ext;
+            $image->move('storage/images/customer', $imageName);
+            $lims_customer_data['id_card'] = $imageName;
+        }
+
         $lims_customer_data = Customer::find($id);
 
         if(isset($input['user'])) {
@@ -250,6 +235,9 @@ class CustomerController extends Controller
                $customer->state = $data['state'];
                $customer->postal_code = $data['postalcode'];
                $customer->country = $data['country'];
+               $customer->credit_term = $data['credit_term'];
+               $customer->bank_account = $data['bank_account'];
+               $customer->agent_name = $data['agent_name'];
                $customer->is_active = true;
                $customer->save();
                $message = 'Customer Imported Successfully';
@@ -356,12 +344,6 @@ class CustomerController extends Controller
         return 'Customer deleted successfully!';
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $lims_customer_data = Customer::find($id);

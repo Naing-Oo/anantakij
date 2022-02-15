@@ -70,15 +70,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group mt-2">
-                                    <strong>{{trans('file.Print')}}: </strong>&nbsp;
-                                    <strong><input type="checkbox" name="name" checked /> {{trans('file.Product Name')}}</strong>&nbsp;
-                                    <strong><input type="checkbox" name="price" checked/> {{trans('file.Price')}}</strong>&nbsp;
-                                    <strong><input type="checkbox" name="promo_price"/> {{trans('file.Promotional Price')}}</strong>
+                                <div class="row">
+                                    <div class="form-group col-md-6 mt-2">
+                                        <strong>{{trans('file.Print')}}: </strong>&nbsp;
+                                        <strong><input type="checkbox" name="name" checked /> {{trans('file.Product Name')}}</strong>&nbsp;
+                                        <strong><input type="checkbox" name="price" checked/> {{trans('file.Price')}}</strong>&nbsp;
+                                        <strong><input type="checkbox" name="promo_price"/> {{trans('file.Promotional Price')}}</strong>
+                                        <strong><input type="checkbox" name="company_name" checked /> {{trans('file.Company Name')}}</strong>
+                                        <strong><input type="checkbox" name="is_delivery_date" /> {{trans('file.Delivery Date')}}</strong>
+                                    </div>
+                                    <div id="delivery_date" class="form-group col-md-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text"><i class="dripicons-calendar"></i></div>
+                                            </div>
+                                            <input type="text" name="delivery_date" class="form-control" />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label><strong>Paper Size *</strong></label>
+                                        <label><strong>{{ trans('file.Paper Size') }} *</strong></label>
                                         <select class="form-control" name="paper_size" required id="paper-size">
                                             <option value="0">Select paper size...</option>
                                             <option value="36">36 mm (1.4 inch)</option>
@@ -119,6 +131,25 @@
 
 @push('scripts')
 <script type="text/javascript">
+
+    $("#delivery_date").hide();
+
+    var delivery_date = $('input[name="delivery_date"]');
+    delivery_date.datepicker({
+    format: "dd-mm-yyyy",
+    startDate: "<?php echo date('d-m-Y'); ?>",
+    autoclose: true,
+    todayHighlight: true
+    });
+
+    $('input[name="is_delivery_date"]').on("change", function(e){
+        if($(e.currentTarget).is(":checked")){
+            $('input[name="delivery_date"]').val($.datepicker.formatDate('dd-mm-yy', new Date()));
+            $("#delivery_date").show(300);
+        }else{
+            $("#delivery_date").hide(300);
+        }
+    });
 
     $("ul#product").siblings('a').attr('aria-expanded','true');
     $("ul#product").addClass("show");
@@ -167,7 +198,7 @@
                 });
                 $("input[name='product_code_name']").val('');
                 if(flag){
-                    var newRow = $('<tr data-imagedata="'+data[3]+'" data-price="'+data[2]+'" data-promo-price="'+data[4]+'" data-currency="'+data[5]+'" data-currency-position="'+data[6]+'">');
+                    var newRow = $('<tr data-imagedata="'+data[3]+'" data-price="'+data[2]+'" data-promo-price="'+data[4]+'" data-company-name="'+data[10]+'" data-currency="'+data[5]+'" data-currency-position="'+data[6]+'">');
                     var cols = '';
                     cols += '<td>' + data[0] + '</td>';
                     cols += '<td class="product-code">' + data[1] + '</td>';
@@ -177,6 +208,7 @@
                     newRow.append(cols);
                     $("table.order-list tbody").append(newRow);
                 }
+                
             }
         });
     }
@@ -188,6 +220,7 @@
         $(this).closest("tr").remove();
     });
 
+   
     $("#submit-button").on("click", function(event) {
         paper_size = ($("#paper-size").val());
         if(paper_size != "0") {
@@ -195,6 +228,8 @@
             var code = [];
             var price = [];
             var promo_price = [];
+            var company_name = [];
+            var delivery_date = [];
             var qty = [];
             var barcode_image = [];
             var currency = [];
@@ -205,6 +240,8 @@
                 code.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(2)').text());
                 price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('price'));
                 promo_price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('promo-price'));
+                company_name.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('company-name'));
+                delivery_date.push($('input[name="delivery_date"]').val());
                 currency.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency'));
                 currency_position.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency-position'));
                 qty.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.qty').val());
@@ -251,20 +288,31 @@
                         htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
 
                     htmltext += code[index] + '<br>';
+
                     if($('input[name="code"]').is(":checked"))
                         htmltext += '<strong>'+code[index]+'</strong><br>';
+
                     if($('input[name="promo_price"]').is(":checked")) {
                         if(currency_position[index] == 'prefix')
-                            htmltext += 'Price: '+currency[index]+'<span style="text-decoration: line-through;"> '+price[index]+'</span> '+promo_price[index]+'<br>';
+                            htmltext += '{{ trans('file.Price')}}: '+currency[index]+'<span style="text-decoration: line-through;"> '+price[index]+'</span> '+promo_price[index]+'<br>';
                         else
-                            htmltext += 'Price: <span style="text-decoration: line-through;">'+price[index]+'</span> '+promo_price[index]+' '+currency[index]+'<br>';
+                            htmltext += '{{ trans('file.Price')}}: <span style="text-decoration: line-through;">'+price[index]+'</span> '+promo_price[index]+' '+currency[index]+'<br>';
                     }
                     else if($('input[name="price"]').is(":checked")) {
                         if(currency_position[index] == 'prefix')
-                            htmltext += 'Price: '+currency[index]+' '+price[index];
+                            htmltext += '{{ trans('file.Price')}}: '+currency[index]+' '+price[index]+'<br>';
                         else
-                            htmltext += 'Price: '+price[index]+' '+currency[index];
+                            htmltext += '{{ trans('file.Price')}}: '+price[index]+' '+currency[index]+'<br>';
                     }
+
+                    if($('input[name="company_name"]').is(":checked")) {
+                        htmltext += '{{ trans('file.Company Name')}}: '+company_name[index]+'<br>';
+                    }
+
+                    if($('input[name="is_delivery_date"]').is(":checked")) {
+                        htmltext += '{{ trans('file.Delivery Date')}}: '+delivery_date[index];
+                    }
+
                     htmltext +='</td>';
                     if(i % 2 != 0)
                         htmltext +='</tr>';
@@ -276,7 +324,7 @@
             $('#print-barcode').modal('show');
         }
         else
-            alert('Please select paper size');
+            alert("{{ trans('file.Please select paper size') }}");
     });
 
     /*$("#print-btn").on("click", function(){

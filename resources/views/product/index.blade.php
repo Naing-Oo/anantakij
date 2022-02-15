@@ -78,6 +78,7 @@
     </div>
 </div>
 
+<!-- product details -->
 <div id="product-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
     <div role="document" class="modal-dialog">
       <div class="modal-content">
@@ -186,7 +187,21 @@
         product[11] = product[11].replace(/@/g, '"');
         htmltext = slidertext = '';
 
-        htmltext = '<p><strong>{{trans("file.Type")}}: </strong>'+product[0]+'</p><p><strong>{{trans("file.name")}}: </strong>'+product[1]+'</p><p><strong>{{trans("file.Code")}}: </strong>'+product[2]+ '</p><p><strong>{{trans("file.Brand")}}: </strong>'+product[3]+'</p><p><strong>{{trans("file.category")}}: </strong>'+product[4]+'</p><p><strong>{{trans("file.Quantity")}}: </strong>'+product[17]+'</p><p><strong>{{trans("file.Unit")}}: </strong>'+product[5]+'</p><p><strong>{{trans("file.Cost")}}: </strong>'+product[6]+'</p><p><strong>{{trans("file.Price")}}: </strong>'+product[7]+'</p><p><strong>{{trans("file.Tax")}}: </strong>'+product[8]+'</p><p><strong>{{trans("file.Tax Method")}} : </strong>'+product[9]+'</p><p><strong>{{trans("file.Alert Quantity")}} : </strong>'+product[10]+'</p><p><strong>{{trans("file.Product Details")}}: </strong></p>'+product[11];
+        htmltext = '<p><strong>{{trans("file.Type")}}: </strong>'+product[0]+
+                   '</p><p><strong>{{trans("file.name")}}: </strong>'+product[1]+
+                   '</p><p><strong>{{trans("file.Code")}}: </strong>'+product[2]+
+                   '</p><p><strong>{{trans("file.Brand")}}: </strong>'+product[3]+
+                   '</p><p><strong>{{trans("file.category")}}: </strong>'+product[4]+
+                   '</p><p><strong>{{trans("file.Quantity")}}: </strong>'+product[17]+
+                   '</p><p><strong>{{trans("file.Unit")}}: </strong>'+product[5]+
+                   '</p><p><strong>{{trans("file.Cost")}}: </strong>'+product[6]+
+                   '</p><p><strong>{{trans("file.Price")}}: </strong>'+product[7]+
+                   '</p><p><strong>{{trans("file.Tax")}}: </strong>'+product[8]+
+                   '</p><p><strong>{{trans("file.Tax Method")}} : </strong>'+product[9]+
+                   '</p><p><strong>{{trans("file.Alert Quantity")}} : </strong>'+product[10]+
+                   '</p><p><strong>{{trans("file.Product Details")}}: </strong></p>'+product[11]+
+                   '</p><p><strong>{{trans("file.Catching Commission Rate")}}: </strong></p>'+product[19]+
+                   '</p><p><strong>{{trans("file.Promotional Price")}} / {{trans("file.Minimum Quantity")}}: </strong></p>'+product[20];
 
         if(product[18]) {
             var product_image = product[18].split(",");
@@ -257,7 +272,7 @@
                     var newHead = $("<thead>");
                     var newBody = $("<tbody>");
                     var newRow = $("<tr>");
-                    newRow.append('<th>{{trans("file.Warehouse")}}</th><th>{{trans("file.Batch No")}}</th><th>{{trans("file.Expired Date")}}</th><th>{{trans("file.Quantity")}}</th><th>{{trans("file.IMEI or Serial Numbers")}}</th>');
+                    newRow.append('<th>{{trans("file.Warehouse")}}</th><th>{{trans("file.Batch No")}}</th><th>{{trans("file.Received Date")}}</th><th>{{trans("file.Quantity")}}</th>');
                     newHead.append(newRow);
                     $.each(warehouse, function(index) {
                         var newRow = $("<tr>");
@@ -266,7 +281,6 @@
                         cols += '<td>' + batch[index] + '</td>';
                         cols += '<td>' + expired_date[index] + '</td>';
                         cols += '<td>' + qty[index] + '</td>';
-                        cols += '<td>' + imei_numbers[index] + '</td>';
 
                         newRow.append(cols);
                         newBody.append(newRow);

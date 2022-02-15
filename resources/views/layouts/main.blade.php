@@ -228,6 +228,52 @@
                     </ul>
                 </li>
               @endif
+
+              <!-- Online Order -->
+              <?php
+                $sale_index_permission = DB::table('permissions')->where('name', 'sales-index')->first();
+                $sale_index_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $sale_index_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+
+                $gift_card_permission = DB::table('permissions')->where('name', 'gift_card')->first();
+                $gift_card_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $gift_card_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+
+                $coupon_permission = DB::table('permissions')->where('name', 'coupon')->first();
+                $coupon_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $coupon_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+
+                $delivery_permission_active = DB::table('permissions')
+                      ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                      ->where([
+                        ['permissions.name', 'delivery'],
+                        ['role_id', $role->id] ])->first();
+
+                $sale_add_permission = DB::table('permissions')->where('name', 'sales-add')->first();
+                $sale_add_permission_active = DB::table('role_has_permissions')->where([
+                    ['permission_id', $sale_add_permission->id],
+                    ['role_id', $role->id]
+                ])->first();
+              ?>
+              @if($sale_index_permission_active || $gift_card_permission_active || $coupon_permission_active || $delivery_permission_active)
+                <li><a href="#order" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-cart"></i><span>{{trans('file.Customer Order')}}</span></a>
+                    <ul id="order" class="collapse list-unstyled ">
+                        @if($sale_index_permission_active)
+                        <li id="order-list-menu"><a href="{{route('orders.index')}}">{{trans('file.Order List')}}</a></li>
+                            @if($sale_add_permission_active)
+                            <li id="order-create-menu"><a href="{{route('orders.create')}}">{{trans('file.Add Order')}}</a></li>
+                            {{-- <li id="order-import-menu"><a href="{{url('orders/sale_by_csv')}}">{{trans('file.Import Order By CSV')}}</a></li> --}}
+                            @endif
+                        @endif
+                    </ul>
+                </li>
+              @endif
              
               <!-- User | Customer -->
               <?php
@@ -287,6 +333,34 @@
                         @if($customer_add_permission_active)
                         <li id="customer-create-menu"><a href="{{route('customer.create')}}">{{trans('file.Add Customer')}}</a></li>
                         @endif
+
+                        @if($biller_index_permission_active)
+                            <li id="biller-list-menu"><a href="{{route('biller.index')}}">{{trans('file.Biller List')}}</a></li>
+                            <?php
+                              $biller_add_permission = DB::table('permissions')->where('name', 'billers-add')->first();
+                              $biller_add_permission_active = DB::table('role_has_permissions')->where([
+                                  ['permission_id', $biller_add_permission->id],
+                                  ['role_id', $role->id]
+                              ])->first();
+                            ?>
+                            @if($biller_add_permission_active)
+                            <li id="biller-create-menu"><a href="{{route('biller.create')}}">{{trans('file.Add Biller')}}</a></li>
+                            @endif
+                        @endif
+                      
+                        @if($supplier_index_permission_active)
+                            <li id="supplier-list-menu"><a href="{{route('supplier.index')}}">{{trans('file.Supplier List')}}</a></li>
+                            <?php
+                              $supplier_add_permission = DB::table('permissions')->where('name', 'suppliers-add')->first();
+                              $supplier_add_permission_active = DB::table('role_has_permissions')->where([
+                                  ['permission_id', $supplier_add_permission->id],
+                                  ['role_id', $role->id]
+                              ])->first();
+                            ?>
+                            @if($supplier_add_permission_active)
+                            <li id="supplier-create-menu"><a href="{{route('supplier.create')}}">{{trans('file.Add Supplier')}}</a></li>
+                            @endif
+                        @endif 
                     @endif
                   </ul>
                 </li>
@@ -536,6 +610,12 @@
                                       ['role_id', $role->id]
                                   ])->first();
 
+                          $catcher_team_permission = DB::table('permissions')->where('name', 'catcher_team')->first();
+                          $catcher_team_permission_active = DB::table('role_has_permissions')->where([
+                                      ['permission_id', $catcher_team_permission->id],
+                                      ['role_id', $role->id]
+                                  ])->first();
+
                           $brand_permission = DB::table('permissions')->where('name', 'brand')->first();
                           $brand_permission_active = DB::table('role_has_permissions')->where([
                                       ['permission_id', $brand_permission->id],
@@ -622,6 +702,11 @@
                       @if($customer_group_permission_active)
                         <li id="customer-group-menu"><a href="{{route('customer_group.index')}}">{{trans('file.Customer Group')}}</a></li>
                       @endif
+
+                      @if($catcher_team_permission_active)
+                        <li id="catcher-team-menu"><a href="{{route('catcher_team.index')}}">{{trans('file.Catcher Team')}}</a></li>
+                      @endif
+
                       @if($brand_permission_active)
                         <li id="brand-menu"><a href="{{route('brand.index')}}">{{trans('file.Brand')}}</a></li>
                       @endif

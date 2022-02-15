@@ -83,6 +83,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('customer_group/lims_customer_group_search', 'CustomerGroupController@limsCustomerGroupSearch')->name('customer_group.search');
 	Route::resource('customer_group', 'CustomerGroupController');
 
+	// Catching Team
+	Route::post('catcher_team/deletebyselection', 'CatcherTeamController@deleteBySelection');
+	Route::get('catcher_team/lims_catcher_team_search', 'CatcherTeamController@limsCatcherTeamSearch')->name('catcher_team.search');
+	Route::resource('catcher_team', 'CatcherTeamController');
+
 	Route::post('importcustomer', 'CustomerController@importCustomer')->name('customer.import');
 	Route::get('customer/getDeposit/{id}', 'CustomerController@getDeposit');
 	Route::post('customer/add_deposit', 'CustomerController@addDeposit')->name('customer.addDeposit');
@@ -297,3 +302,18 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 	Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('my-transactions/{year}/{month}', 'HomeController@myTransaction');
+
+	// Online Order
+	Route::resource('orders', 'OnlineOrderController');
+	Route::post('orders/sale-data', 'OnlineOrderController@saleData');
+
+	Route::post('orders/sendmail', 'OnlineOrderController@sendMail')->name('order.sendmail');
+	Route::get('orders/product_sale/{id}','OnlineOrderController@productSaleData');
+	Route::get('orders/lims_sale_search', 'OnlineOrderController@limsSaleSearch')->name('order.search');
+	Route::get('orders/lims_product_search', 'OnlineOrderController@limsProductSearch')->name('product_order.search');
+	Route::get('orders/getproduct/{id}', 'OnlineOrderController@getProduct')->name('order.getproduct');
+	Route::get('orders/gen_invoice/{id}', 'OnlineOrderController@genInvoice')->name('order.invoice');
+	Route::get('orders/{id}/create', 'OnlineOrderController@createOrder');
+	Route::post('orders/deletebyselection', 'OnlineOrderController@deleteBySelection');
+	Route::get('orders/today-sale', 'OnlineOrderController@todayOrder');
+	

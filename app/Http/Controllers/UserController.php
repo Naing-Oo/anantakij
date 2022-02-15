@@ -20,11 +20,7 @@ use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
@@ -39,11 +35,6 @@ class UserController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
@@ -65,12 +56,6 @@ class UserController extends Controller
         return $id;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -87,6 +72,7 @@ class UserController extends Controller
                     return $query->where('is_deleted', false);
                 }),
             ],
+            
         ]);
         
         if($request->role_id == 5) {
@@ -97,10 +83,21 @@ class UserController extends Controller
                         return $query->where('is_active', 1);
                     }),
                 ],
+                'id_card' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
             ]);
         }
 
-        $data = $request->all();
+        $data = $request->except('id_card');
+
+        $image = $request->id_card;
+        if ($image) {
+            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
+            $imageName = preg_replace('/[^a-zA-Z0-9]/', '', $request['company_name']);
+            $imageName = $imageName . '.' . $ext;
+            $image->move('storage/images/customer', $imageName);
+            $data['id_card'] = $imageName;
+        }
+
         $message = 'User created successfully';
         try {
             Mail::send( 'mail.user_details', $data, function( $message ) use ($data)
@@ -116,33 +113,21 @@ class UserController extends Controller
             $data['is_deleted'] = false;
             $data['password'] = bcrypt($data['password']);
             $data['phone'] = $data['phone_number'];
-            User::create($data);
+            $user = User::create($data);
+            $user_id = $user->id;
+            // dd($user_id);
         if($data['role_id'] == 5) {
             $data['name'] = $data['customer_name'];
             $data['phone_number'] = $data['phone'];
+            $data['tax_no'] = $data['tax_number'];
+            $data['user_id'] = $user_id;
             $data['is_active'] = true;
+            // dd($data);
             Customer::create($data);
         }
         return redirect('user')->with('message1', $message); 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
@@ -157,13 +142,6 @@ class UserController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         if(!env('USER_VERIFIED'))
@@ -245,12 +223,6 @@ class UserController extends Controller
         return 'User deleted successfully!';
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         if(!env('USER_VERIFIED'))

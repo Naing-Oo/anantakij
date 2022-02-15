@@ -23,11 +23,6 @@ class RoleController extends Controller
     }
 
     
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -910,6 +905,16 @@ class RoleController extends Controller
         }
         else
             $role->revokePermissionTo('customer_group');
+
+        if($request->has('catcher_team')){
+            $permission = Permission::firstOrCreate(['name' => 'catcher_team']);
+            if(!$role->hasPermissionTo('catcher_team')){
+                $role->givePermissionTo($permission);
+            }
+        }
+        else
+            $role->revokePermissionTo('catcher_team');
+            
 
         if($request->has('brand')){
             $permission = Permission::firstOrCreate(['name' => 'brand']);

@@ -123,8 +123,8 @@
 
     $('select[name="role_id"]').on('change', function() {
         if($(this).val() > 2){
-            $('select[name="warehouse_id"]').prop('required',true);
-            $('select[name="biller_id"]').prop('required',true);
+            $('select[name="warehouse_id"]').prop('required',false);
+            $('select[name="biller_id"]').prop('required',false);
             $('#biller-id').show();
             $('#warehouseId').show();
         }

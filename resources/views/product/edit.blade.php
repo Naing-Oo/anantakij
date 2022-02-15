@@ -19,7 +19,9 @@
                                         <label>{{trans('file.Product Type')}} *</strong> </label>
                                         <div class="input-group">
                                             <select name="type" required class="form-control selectpicker" id="type">
-                                                <option value="standard">Standard</option>
+                                                <option value="standard">{{ trans('file.Standard') }}</option>
+                                                <option value="grade_b">{{ trans('file.Grade B') }}</option>
+                                                <option value="raw_material">{{ trans('file.Raw Material') }}</option>
                                                 <!-- <option value="combo">Combo</option>
                                                 <option value="digital">Digital</option>
                                                 <option value="service">Service</option> -->
@@ -227,6 +229,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{trans('file.Catcher Commission Rate')}}</strong> </label>
+                                        <input type="number" name="catch_commission_rate" value="{{$lims_product_data->catch_commission_rate}}" class="form-control" step="any">
+                                    </div>
+                                </div>
                                 <!-- Not use -->
                                 {{-- <div class="col-md-4">
                                     <div class="form-group mt-3">
@@ -320,9 +328,9 @@
                                 </div>
                                 <div class="col-md-12 mt-3" id="batch-option">
                                     @if($lims_product_data->is_batch)
-                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1" checked>&nbsp; {{trans('file.This product has batch and expired date')}}</h5>
+                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1" checked>&nbsp; {{trans('file.This product has batch and received date')}}</h5>
                                     @else
-                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1">&nbsp; {{trans('file.This product has batch and expired date')}}</h5>
+                                    <h5><input name="is_batch" type="checkbox" id="is-batch" value="1">&nbsp; {{trans('file.This product has batch and received date')}}</h5>
                                     @endif
                                 </div>
                                 {{-- <div class="col-md-12 mt-3" id="imei-option">
@@ -380,16 +388,20 @@
 
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <div class="col-md-4" id="promotion_price">   <label>{{trans('file.Promotional Price')}}</label>
+                                        <div class="col-md-3" id="promotion_price">   <label>{{trans('file.Promotional Price')}}</label>
                                             <input type="number" name="promotion_price" value="{{$lims_product_data->promotion_price}}" class="form-control" step="any" />
                                         </div>
-                                        <div id="start_date" class="col-md-4">
+                                        <div class="col-md-3" id="min_qty">
+                                            <label>{{trans('file.Minimum Quantity')}}</label>
+                                            <input type="number" name="min_qty" value="{{$lims_product_data->min_qty}}" class="form-control" step="any" />
+                                        </div>
+                                        <div id="start_date" class="col-md-3">
                                             <div class="form-group">
                                                 <label>{{trans('file.Promotion Starts')}}</label>
                                                 <input type="text" name="starting_date" value="{{$lims_product_data->starting_date}}" id="starting_date" class="form-control" />
                                             </div>
                                         </div>
-                                        <div id="last_date" class="col-md-4">
+                                        <div id="last_date" class="col-md-3">
                                             <div class="form-group">
                                                 <label>{{trans('file.Promotion Ends')}}</label>
                                                 <input type="text" name="last_date" value="{{$lims_product_data->last_date}}" id="ending_date" class="form-control" />
@@ -463,11 +475,13 @@
     if(promotion){
         $("input[name='promotion']").prop('checked', true);
         $("#promotion_price").show(300);
+        $("#min_qty").show();
         $("#start_date").show(300);
         $("#last_date").show(300);
     }
     else {
         $("#promotion_price").hide(300);
+        $("#min_qty").hide();
         $("#start_date").hide(300);
         $("#last_date").hide(300);
     }
@@ -523,51 +537,51 @@
     $('select[name=tax_method]').val(tax_method);
     $('.selectpicker').selectpicker('refresh');
 
-    $('select[name="type"]').on('change', function() {
-        if($(this).val() == 'combo'){
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            hide();
-            $("#digital").hide();
-            $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
-            $("#combo").show();
-            $("input[name='price']").prop('disabled',true);
-        }
-        else if($(this).val() == 'digital'){
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            $("input[name='file']").prop('required',true);
-            hide();
-            $("#combo").hide();
-            $("#digital").show();
-            $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
-            $("input[name='price']").prop('disabled',false);
-        }
-        else if($(this).val() == 'service') {
-            $("input[name='cost']").prop('required',false);
-            $("select[name='unit_id']").prop('required',false);
-            $("input[name='file']").prop('required',true);
-            hide();
-            $("#combo").hide(300);
-            $("#digital").hide(300);
-            $("input[name='price']").prop('disabled',false);
-            $("#is-variant").prop("checked", false);
-            $("#variant-section, #variant-option").hide(300);
-        }
-        else if($(this).val() == 'standard'){
-            $("input[name='cost']").prop('required',true);
-            $("select[name='unit_id']").prop('required',true);
-            $("input[name='file']").prop('required',false);
-            $("#cost").show();
-            $("#unit").show();
-            $("#alert-qty").show();
-            $("#variant-option").show(300);
-            $("#diffPrice-option").show(300);
-            $("#digital").hide();
-            $("#combo").hide();
-            $("input[name='price']").prop('disabled',false);
-        }
-    });
+    // $('select[name="type"]').on('change', function() {
+    //     if($(this).val() == 'combo'){
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         hide();
+    //         $("#digital").hide();
+    //         $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
+    //         $("#combo").show();
+    //         $("input[name='price']").prop('disabled',true);
+    //     }
+    //     else if($(this).val() == 'digital'){
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         $("input[name='file']").prop('required',true);
+    //         hide();
+    //         $("#combo").hide();
+    //         $("#digital").show();
+    //         $("#variant-section, #variant-option, #diffPrice-option, #diffPrice-section").hide(300);
+    //         $("input[name='price']").prop('disabled',false);
+    //     }
+    //     else if($(this).val() == 'service') {
+    //         $("input[name='cost']").prop('required',false);
+    //         $("select[name='unit_id']").prop('required',false);
+    //         $("input[name='file']").prop('required',true);
+    //         hide();
+    //         $("#combo").hide(300);
+    //         $("#digital").hide(300);
+    //         $("input[name='price']").prop('disabled',false);
+    //         $("#is-variant").prop("checked", false);
+    //         $("#variant-section, #variant-option").hide(300);
+    //     }
+    //     else if($(this).val() == 'standard'){
+    //         $("input[name='cost']").prop('required',true);
+    //         $("select[name='unit_id']").prop('required',true);
+    //         $("input[name='file']").prop('required',false);
+    //         $("#cost").show();
+    //         $("#unit").show();
+    //         $("#alert-qty").show();
+    //         $("#variant-option").show(300);
+    //         $("#diffPrice-option").show(300);
+    //         $("#digital").hide();
+    //         $("#combo").hide();
+    //         $("input[name='price']").prop('disabled',false);
+    //     }
+    // });
 
     $('select[name="unit_id"]').on('change', function() {
         unitID = $(this).val();
@@ -775,11 +789,13 @@
     $( "#promotion" ).on( "change", function() {
         if ($(this).is(':checked')) {
             $("#promotion_price").show();
+            $("#min_qty").show();
             $("#start_date").show();
             $("#last_date").show();
         }
         else {
             $("#promotion_price").hide();
+            $("#min_qty").hide();
             $("#start_date").hide();
             $("#last_date").hide();
         }
