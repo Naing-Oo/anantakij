@@ -30,6 +30,7 @@
                     <th>{{trans('file.Image')}}</th>
                     <th>{{trans('file.name')}}</th>
                     <th>{{trans('file.Code')}}</th>
+                    <th>{{trans('file.Type')}}</th>
                     <th>{{trans('file.Brand')}}</th>
                     <th>{{trans('file.category')}}</th>
                     <th>{{trans('file.Quantity')}}</th>
@@ -348,6 +349,7 @@
                 {"data": "image"},
                 {"data": "name"},
                 {"data": "code"},
+                {"data": "type"},
                 {"data": "brand"},
                 {"data": "category"},
                 {"data": "qty"},

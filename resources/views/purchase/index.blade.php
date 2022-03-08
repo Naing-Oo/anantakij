@@ -115,7 +115,7 @@
                 <thead>
                     <th>#</th>
                     <th>{{trans('file.product')}}</th>
-                    {{-- <th>{{trans('file.Batch No')}}</th> --}}
+                    <th>{{trans('file.Batch No')}}</th>
                     <th>Qty</th>
                     <th>{{trans('file.Unit Cost')}}</th>
                     <th>{{trans('file.Tax')}}</th>
@@ -171,7 +171,7 @@
                     <div class="row">
                         <input type="hidden" name="balance">
                         <div class="col-md-6">
-                            <label>{{trans('file.Recieved Amount')}} *</label>
+                            <label>{{trans('file.Received Amount')}} *</label>
                             <input type="text" name="paying_amount" class="form-control numkey"  step="any" required>
                         </div>
                         <div class="col-md-6">
@@ -240,7 +240,7 @@
                 {!! Form::open(['route' => 'purchase.update-payment', 'method' => 'post', 'class' => 'payment-form' ]) !!}
                     <div class="row">
                         <div class="col-md-6">
-                            <label>{{trans('file.Recieved Amount')}} *</label>
+                            <label>{{trans('file.Received Amount')}} *</label>
                             <input type="text" name="edit_paying_amount" class="form-control numkey"  step="any" required>
                         </div>
                         <div class="col-md-6">
@@ -475,7 +475,7 @@
 
     $('input[name="amount"]').on("input", function() {
         if( $(this).val() > parseFloat($('input[name="paying_amount"]').val()) ) {
-            alert('Paying amount cannot be bigger than recieved amount');
+            alert('Paying amount cannot be bigger than received amount');
             $(this).val('');
         }
         else if( $(this).val() > parseFloat($('input[name="balance"]').val()) ) {
@@ -506,7 +506,7 @@
 
     $('input[name="edit_amount"]').on("input", function() {
         if( $(this).val() > parseFloat($('input[name="edit_paying_amount"]').val()) ) {
-            alert('Paying amount cannot be bigger than recieved amount');
+            alert('Paying amount cannot be bigger than received amount');
             $(this).val('');
         }
         $(".change").text(parseFloat($('input[name="edit_paying_amount"]').val() - $(this).val()).toFixed(2));
@@ -675,7 +675,7 @@
                 var api = this.api();
                 datatable_sum(api, false);
             }
-        } );
+        });
 
     }
 
@@ -695,7 +695,21 @@
     }
 
     function purchaseDetails(purchase){
-        var htmltext = '<strong>{{trans("file.Date")}}: </strong>'+purchase[0]+'<br><strong>{{trans("file.reference")}}: </strong>'+purchase[1]+'<br><strong>{{trans("file.Purchase Status")}}: </strong>'+purchase[2]+'<br><br><div class="row"><div class="col-md-6"><strong>{{trans("file.From")}}:</strong><br>'+purchase[4]+'<br>'+purchase[5]+'<br>'+purchase[6]+'</div><div class="col-md-6"><div class="float-right"><strong>{{trans("file.To")}}:</strong><br>'+purchase[7]+'<br>'+purchase[8]+'<br>'+purchase[9]+'<br>'+purchase[10]+'<br>'+purchase[11]+'<br>'+purchase[12]+'</div></div></div>';
+        var queueDate = '';
+        if (purchase[2] == "Already Queued") {
+            queueDate = '<br><strong>{{trans("file.Queue Date")}}: </strong>'+purchase[25].replace(/-/gi,'/');
+        }else {
+            queueDate = '';
+        }
+        console.log(queueDate);
+        var htmltext = '<strong>{{trans("file.Date")}}: </strong>'+purchase[0]+'<br><strong>{{trans("file.reference")}}: </strong>'+purchase[1]
+                    +'<br><strong>{{trans("file.Purchase Status")}}: </strong>'+purchase[2] 
+                    + queueDate                
+                    +'<br><br><div class="row"><div class="col-md-6"><strong>{{trans("file.From")}}:</strong><br>'+purchase[4]
+                    +'<br>'+purchase[5]
+                    +'<br>'+purchase[6]
+                    +'</div><div class="col-md-6"><div class="float-right"><strong>{{trans("file.To")}}:</strong><br>'
+                    +purchase[7]+'<br>'+purchase[8]+'<br>'+purchase[9]+'<br>'+purchase[10]+'<br>'+purchase[11]+'<br>'+purchase[12]+'</div></div></div>';
 
         $.get('purchases/product_purchase/' + purchase[3], function(data){
             // console.log(purchase[13]);
@@ -707,14 +721,14 @@
             var tax_rate = data[4];
             var discount = data[5];
             var subtotal = data[6];
-            // var batch_no = data[7];
+            var batch_no = data[7];
             var newBody = $("<tbody>");
             $.each(name_code, function(index) {
                 var newRow = $("<tr>");
                 var cols = '';
                 cols += '<td><strong>' + (index+1) + '</strong></td>';
                 cols += '<td>' + name_code[index] + '</td>';
-                // cols += '<td>' + batch_no[index] + '</td>';
+                cols += '<td>' + batch_no[index] + '</td>';
                 cols += '<td>' + qty[index] + ' ' + unit_code[index] + '</td>';
                 cols += '<td>' + (subtotal[index] / qty[index]) + '</td>';
                 cols += '<td>' + tax[index] + '(' + tax_rate[index] + '%)' + '</td>';
@@ -726,7 +740,7 @@
 
             var newRow = $("<tr>");
             cols = '';
-            cols += '<td colspan=4><strong>{{trans("file.Total")}}:</strong></td>';
+            cols += '<td colspan=5><strong>{{trans("file.Total")}}:</strong></td>';
             cols += '<td>' + purchase[13] + '</td>';
             cols += '<td>' + purchase[14] + '</td>';
             cols += '<td>' + purchase[15] + '</td>';
@@ -735,7 +749,7 @@
 
             var newRow = $("<tr>");
             cols = '';
-            cols += '<td colspan=6><strong>{{trans("file.Order Tax")}}:</strong></td>';
+            cols += '<td colspan=7><strong>{{trans("file.Order Tax")}}:</strong></td>';
             cols += '<td>' + purchase[16] + '(' + purchase[17] + '%)' + '</td>';
             newRow.append(cols);
             newBody.append(newRow);
@@ -756,21 +770,21 @@
 
             var newRow = $("<tr>");
             cols = '';
-            cols += '<td colspan=6><strong>{{trans("file.grand total")}}:</strong></td>';
+            cols += '<td colspan=7><strong>{{trans("file.grand total")}}:</strong></td>';
             cols += '<td>' + purchase[20] + '</td>';
             newRow.append(cols);
             newBody.append(newRow);
 
             var newRow = $("<tr>");
             cols = '';
-            cols += '<td colspan=6><strong>{{trans("file.Paid Amount")}}:</strong></td>';
+            cols += '<td colspan=7><strong>{{trans("file.Paid Amount")}}:</strong></td>';
             cols += '<td>' + purchase[21] + '</td>';
             newRow.append(cols);
             newBody.append(newRow);
 
             var newRow = $("<tr>");
             cols = '';
-            cols += '<td colspan=6><strong>{{trans("file.Due")}}:</strong></td>';
+            cols += '<td colspan=7><strong>{{trans("file.Due")}}:</strong></td>';
             cols += '<td>' + (purchase[20] - purchase[21]) + '</td>';
             newRow.append(cols);
             newBody.append(newRow);
@@ -787,13 +801,13 @@
 
     $(document).on('submit', '.payment-form', function(e) {
         if( $('input[name="paying_amount"]').val() < parseFloat($('#amount').val()) ) {
-            alert('Paying amount cannot be bigger than recieved amount');
+            alert('Paying amount cannot be bigger than received amount');
             $('input[name="amount"]').val('');
             $(".change").text(parseFloat( $('input[name="paying_amount"]').val() - $('#amount').val() ).toFixed(2));
             e.preventDefault();
         }
         else if( $('input[name="edit_paying_amount"]').val() < parseFloat($('input[name="edit_amount"]').val()) ) {
-            alert('Paying amount cannot be bigger than recieved amount');
+            alert('Paying amount cannot be bigger than received amount');
             $('input[name="edit_amount"]').val('');
             $(".change").text(parseFloat( $('input[name="edit_paying_amount"]').val() - $('input[name="edit_amount"]').val() ).toFixed(2));
             e.preventDefault();

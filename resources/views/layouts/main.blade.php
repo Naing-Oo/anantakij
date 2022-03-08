@@ -128,12 +128,15 @@
                       ?>
                       @if($add_permission_active)
                       <li id="product-create-menu"><a href="{{route('products.create')}}">{{__('file.add_product')}}</a></li>
+                      
                       @endif
+                      
                     @endif
                     @if($print_barcode_active)
                     <li id="printBarcode-menu"><a href="{{route('product.printBarcode')}}">{{__('file.print_barcode')}}</a></li>
                     @endif
                     @if($adjustment_active)
+                      <li id="stockin-menu"><a href="{{route('stock-count.stockin-list')}}">{{__('file.Stock In')}}</a></li>
                       <li id="adjustment-list-menu"><a href="{{route('qty_adjustment.index')}}">{{trans('file.Adjustment List')}}</a></li>
                       <li id="adjustment-create-menu"><a href="{{route('qty_adjustment.create')}}">{{trans('file.Add Adjustment')}}</a></li>
                     @endif
@@ -274,6 +277,34 @@
                     </ul>
                 </li>
               @endif
+
+              <!-- Transfer -->
+              <?php
+                $index_permission = DB::table('permissions')->where('name', 'transfers-index')->first();
+                $index_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $index_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+              ?>
+              @if($index_permission_active)
+              <li><a href="#transfer" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-export"></i><span>{{trans('file.Transfer')}}</span></a>
+                <ul id="transfer" class="collapse list-unstyled ">
+                  <li id="transfer-list-menu"><a href="{{route('transfers.index')}}">{{trans('file.Transfer List')}}</a></li>
+                  <?php
+                    $add_permission = DB::table('permissions')->where('name', 'transfers-add')->first();
+                    $add_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $add_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+                  ?>
+                  @if($add_permission_active)
+                  <li id="transfer-create-menu"><a href="{{route('transfers.create')}}">{{trans('file.Add Transfer')}}</a></li>
+                  <li id="transfer-import-menu"><a href="{{url('transfers/transfer_by_csv')}}">{{trans('file.Import Transfer By CSV')}}</a></li>
+                  @endif
+                </ul>
+              </li>
+              @endif
+
              
               <!-- User | Customer -->
               <?php
@@ -616,6 +647,13 @@
                                       ['role_id', $role->id]
                                   ])->first();
 
+                          
+                          $agent_permission = DB::table('permissions')->where('name', 'agent')->first();
+                          $agent_permission_active = DB::table('role_has_permissions')->where([
+                                      ['permission_id', $agent_permission->id],
+                                      ['role_id', $role->id]
+                                  ])->first();
+
                           $brand_permission = DB::table('permissions')->where('name', 'brand')->first();
                           $brand_permission_active = DB::table('role_has_permissions')->where([
                                       ['permission_id', $brand_permission->id],
@@ -705,6 +743,10 @@
 
                       @if($catcher_team_permission_active)
                         <li id="catcher-team-menu"><a href="{{route('catcher_team.index')}}">{{trans('file.Catcher Team')}}</a></li>
+                      @endif
+
+                      @if($agent_permission_active)
+                        <li id="agent-menu"><a href="{{route('agents.index')}}">{{trans('file.Agent')}}</a></li>
                       @endif
 
                       @if($brand_permission_active)

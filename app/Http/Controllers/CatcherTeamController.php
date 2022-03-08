@@ -91,7 +91,7 @@ class CatcherTeamController extends Controller
             $catcher_team_data->is_active = false;
             $catcher_team_data->save();
         }
-        return 'Customer Group deleted successfully!';
+        return 'Catcher deleted successfully!';
     }
 
     public function destroy($id)

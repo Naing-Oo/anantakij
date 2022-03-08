@@ -16,6 +16,8 @@ use App\Models\Payment;
 use App\Models\PaymentWithCheque;
 use App\Models\PaymentWithCreditCard;
 use App\Models\PosSetting;
+use App\Models\Agent;
+use App\Models\CatcherTeam;
 use DB;
 use App\Models\GeneralSetting;
 use Stripe\Stripe;
@@ -29,11 +31,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function index(Request $request)
     {
         $role = Role::find(Auth::user()->role_id);
@@ -195,8 +193,8 @@ class PurchaseController extends Controller
                 }
                 $nestedData['supplier'] = $supplier->name;
                 if($purchase->status == 1){
-                    $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Recieved').'</div>';
-                    $purchase_status = trans('file.Recieved');
+                    $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Received').'</div>';
+                    $purchase_status = trans('file.Received');
                 }
                 elseif($purchase->status == 2){
                     $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Partial').'</div>';
@@ -206,9 +204,17 @@ class PurchaseController extends Controller
                     $nestedData['purchase_status'] = '<div class="badge badge-danger">'.trans('file.Pending').'</div>';
                     $purchase_status = trans('file.Pending');
                 }
-                else{
-                    $nestedData['purchase_status'] = '<div class="badge badge-danger">'.trans('file.Ordered').'</div>';
+                elseif($purchase->status == 4){
+                    $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Ordered').'</div>';
                     $purchase_status = trans('file.Ordered');
+                }
+                elseif($purchase->status == 5){
+                    $nestedData['purchase_status'] = '<div class="badge badge-primary">'.trans('file.Price Agreed').'</div>';
+                    $purchase_status = trans('file.Price Agreed');
+                }
+                else{
+                    $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Already Queued').'</div>';
+                    $purchase_status = trans('file.Already Queued');
                 }
 
                 if($purchase->payment_status == 1)
@@ -250,7 +256,7 @@ class PurchaseController extends Controller
                 // data for purchase details by one click
                 $user = User::find($purchase->user_id);
 
-                $nestedData['purchase'] = array( '[ "'.date(config('date_format'), strtotime($purchase->created_at->toDateString())).'"', ' "'.$purchase->reference_no.'"', ' "'.$purchase_status.'"',  ' "'.$purchase->id.'"', ' "'.$purchase->warehouse->name.'"', ' "'.$purchase->warehouse->phone.'"', ' "'.$purchase->warehouse->address.'"', ' "'.$supplier->name.'"', ' "'.$supplier->company_name.'"', ' "'.$supplier->email.'"', ' "'.$supplier->phone_number.'"', ' "'.$supplier->address.'"', ' "'.$supplier->city.'"', ' "'.$purchase->total_tax.'"', ' "'.$purchase->total_discount.'"', ' "'.$purchase->total_cost.'"', ' "'.$purchase->order_tax.'"', ' "'.$purchase->order_tax_rate.'"', ' "'.$purchase->order_discount.'"', ' "'.$purchase->shipping_cost.'"', ' "'.$purchase->grand_total.'"', ' "'.$purchase->paid_amount.'"', ' "'.preg_replace('/\s+/S', " ", $purchase->note).'"', ' "'.$user->name.'"', ' "'.$user->email.'"]'
+                $nestedData['purchase'] = array( '[ "'.date(config('date_format'), strtotime($purchase->created_at->toDateString())).'"', ' "'.$purchase->reference_no.'"', ' "'.$purchase_status.'"',  ' "'.$purchase->id.'"', ' "'.$purchase->warehouse->name.'"', ' "'.$purchase->warehouse->phone.'"', ' "'.$purchase->warehouse->address.'"', ' "'.$supplier->name.'"', ' "'.$supplier->company_name.'"', ' "'.$supplier->email.'"', ' "'.$supplier->phone_number.'"', ' "'.$supplier->address.'"', ' "'.$supplier->city.'"', ' "'.$purchase->total_tax.'"', ' "'.$purchase->total_discount.'"', ' "'.$purchase->total_cost.'"', ' "'.$purchase->order_tax.'"', ' "'.$purchase->order_tax_rate.'"', ' "'.$purchase->order_discount.'"', ' "'.$purchase->shipping_cost.'"', ' "'.$purchase->grand_total.'"', ' "'.$purchase->paid_amount.'"', ' "'.preg_replace('/\s+/S', " ", $purchase->note).'"', ' "'.$user->name.'"', ' "'.$user->email.'"', ' "'.$purchase->queue_date.'"]'
                 );
                 $data[] = $nestedData;
             }
@@ -265,37 +271,55 @@ class PurchaseController extends Controller
         echo json_encode($json_data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('purchases-add')){
             $lims_supplier_list = Supplier::where('is_active', true)->get();
-            $lims_warehouse_list = Warehouse::where('is_active', true)->get();
+            $agents = Agent::where('is_active', true)->select('id', 'name', 'commission_rate')->get();
+            $catchers = CatcherTeam::where('is_active', true)->select('id', 'name')->get();
+            $lims_warehouse_list = Warehouse::where('is_active', true)->where( 'warehouse_type', 'temp')->get();
             $lims_tax_list = Tax::where('is_active', true)->get();
             $lims_product_list_without_variant = $this->productWithoutVariant();
             $lims_product_list_with_variant = $this->productWithVariant();
 
-            return view('purchase.create', compact('lims_supplier_list', 'lims_warehouse_list', 'lims_tax_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant'));
+            return view('purchase.create', compact('lims_supplier_list', 'lims_warehouse_list', 'lims_tax_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'agents', 'catchers'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
+
+    public function getCommission(Request $request, $id){
+        
+        $type = $request->type;
+        if ($type == "agent"){
+            $agent = Agent::where('id', $id)->first();
+            if($agent->commission_rate != 0){
+                return response()->json($agent, 200);
+            }
+        }
+        else{
+            $catcher = CatcherTeam::where('id', $id)->first();
+            if($catcher->commission_rate != 0){
+                return response()->json($catcher, 200);
+            }
+        }
+        
+       
+    }
+
     public function productWithoutVariant()
     {
-        return Product::ActiveStandard()->select('id', 'name', 'code')
-                ->whereNull('is_variant')->get();
+        return Product::ActiveRawMaterial()->select('id', 'name', 'code')
+                ->whereNull('is_variant')
+                ->get();
     }
 
     public function productWithVariant()
     {
         return Product::join('product_variants', 'products.id', 'product_variants.product_id')
-                ->ActiveStandard()
+                ->ActiveRawMaterial()
                 ->whereNotNull('is_variant')
                 ->select('products.id', 'products.name', 'product_variants.item_code')
                 ->orderBy('position')->get();
@@ -307,6 +331,7 @@ class PurchaseController extends Controller
         $product_code[0] = rtrim($product_code[0], " ");
         $lims_product_data = Product::where([
             ['code', $product_code[0]],
+            ['type', 'raw_material'],
             ['is_active', true]
         ])->first();
         if(!$lims_product_data) {
@@ -314,6 +339,7 @@ class PurchaseController extends Controller
                 ->select('products.*', 'product_variants.item_code')
                 ->where([
                     ['product_variants.item_code', $product_code[0]],
+                    ['product.type', 'raw_material'],
                     ['products.is_active', true]
                 ])->first();
         }
@@ -362,12 +388,6 @@ class PurchaseController extends Controller
         return $product;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $data = $request->except('document');
@@ -399,6 +419,8 @@ class PurchaseController extends Controller
         $product_code = $data['product_code'];
         $qty = $data['qty'];
         $recieved = $data['recieved'];
+        $actual_qty = $data['actual_qty'];
+        $round_qty = $data['round_qty'];
         $batch_no = $data['batch_no'];
         $expired_date = $data['expired_date'];
         $purchase_unit = $data['purchase_unit'];
@@ -473,6 +495,7 @@ class PurchaseController extends Controller
                 }
             }
             //add quantity to product table
+            // need to discuss $quantity
             $lims_product_data->qty = $lims_product_data->qty + $quantity;
             $lims_product_data->save();
             //add quantity to warehouse
@@ -501,7 +524,10 @@ class PurchaseController extends Controller
             $product_purchase['product_id'] = $id;
             $product_purchase['imei_number'] = $imei_numbers[$i];
             $product_purchase['qty'] = $qty[$i];
+            $product_purchase['remaining_qty'] = $actual_qty[$i];
             $product_purchase['recieved'] = $recieved[$i];
+            $product_purchase['actual_qty'] = $actual_qty[$i];
+            $product_purchase['round_qty'] = $round_qty[$i];
             $product_purchase['purchase_unit_id'] = $lims_purchase_unit_data->id;
             $product_purchase['net_unit_cost'] = $net_unit_cost[$i];
             $product_purchase['discount'] = $discount[$i];
@@ -517,7 +543,7 @@ class PurchaseController extends Controller
     public function productPurchaseData($id)
     {
         $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
-        foreach ($lims_product_purchase_data as $key => $product_purchase_data) {
+        foreach ($lims_product_purchase_data as $key => $product_purchase_data) {            
             $product = Product::find($product_purchase_data->product_id);
             $unit = Unit::find($product_purchase_data->purchase_unit_id);
             if($product_purchase_data->variant_id) {
@@ -683,37 +709,28 @@ class PurchaseController extends Controller
         return redirect('purchases');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('purchases-edit')){
             $lims_supplier_list = Supplier::where('is_active', true)->get();
-            $lims_warehouse_list = Warehouse::where('is_active', true)->get();
+            $lims_warehouse_list = Warehouse::where('is_active', true)->where( 'warehouse_type', 'temp')->get();
+            $agents = Agent::where('is_active', true)->select('id', 'name', 'commission_rate')->get();
+            $catchers = CatcherTeam::where('is_active', true)->select('id', 'name')->get();
             $lims_tax_list = Tax::where('is_active', true)->get();
             $lims_product_list_without_variant = $this->productWithoutVariant();
             $lims_product_list_with_variant = $this->productWithVariant();
             $lims_purchase_data = Purchase::find($id);
             $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
 
-            return view('purchase.edit', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data'));
+            return view('purchase.edit', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data', 'agents', 'catchers'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(Request $request, $id)
     {
         $data = $request->except('document');
@@ -734,7 +751,7 @@ class PurchaseController extends Controller
             $document->move('public/purchase/documents', $documentName);
             $data['document'] = $documentName;
         }
-        //return dd($data);
+        
         $balance = $data['grand_total'] - $data['paid_amount'];
         if ($balance < 0 || $balance > 0) {
             $data['payment_status'] = 1;
@@ -749,6 +766,8 @@ class PurchaseController extends Controller
         $product_code = $data['product_code'];
         $qty = $data['qty'];
         $recieved = $data['recieved'];
+        $actual_qty = $data['actual_qty'];
+        $round_qty = $data['round_qty'];
         $batch_no = $data['batch_no'];
         $expired_date = $data['expired_date'];
         $purchase_unit = $data['purchase_unit'];
@@ -911,7 +930,10 @@ class PurchaseController extends Controller
             $product_purchase['purchase_id'] = $id ;
             $product_purchase['product_id'] = $pro_id;
             $product_purchase['qty'] = $qty[$key];
+            $product_purchase['remaining_qty'] = $actual_qty[$key];
             $product_purchase['recieved'] = $recieved[$key];
+            $product_purchase['actual_qty'] = $actual_qty[$key];
+            $product_purchase['round_qty'] = $round_qty[$key];
             $product_purchase['purchase_unit_id'] = $lims_purchase_unit_data->id;
             $product_purchase['net_unit_cost'] = $net_unit_cost[$key];
             $product_purchase['discount'] = $discount[$key];
@@ -928,7 +950,6 @@ class PurchaseController extends Controller
 
 
 // Payment
-
     public function addPayment(Request $request)
     {
         $data = $request->all();
@@ -1207,12 +1228,7 @@ class PurchaseController extends Controller
         return 'Purchase deleted successfully!';
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function destroy($id)
     {
         $role = Role::find(Auth::user()->role_id);

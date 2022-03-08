@@ -1073,6 +1073,18 @@
 								                </div>
 								            </div>
 						                </span>
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("agent", $all_permission))
+							                    	<input type="checkbox" value="1" id="agent" name="agent" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="agent" name="agent">
+							                    	@endif
+								                    <label for="agent" class="padding05">{{trans('file.Agent')}} &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
 						                <span>
 								            <div aria-checked="false" aria-disabled="false">
 								                <div class="checkbox">

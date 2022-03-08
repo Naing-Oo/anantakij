@@ -88,6 +88,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('catcher_team/lims_catcher_team_search', 'CatcherTeamController@limsCatcherTeamSearch')->name('catcher_team.search');
 	Route::resource('catcher_team', 'CatcherTeamController');
 
+	// Agent
+	Route::post('agents/deletebyselection', 'AgentController@deleteBySelection');
+	Route::get('agents/lims_agent_search', 'AgentController@limsAgentSearch')->name('agent.search');
+	Route::resource('agents', 'AgentController');
+
 	Route::post('importcustomer', 'CustomerController@importCustomer')->name('customer.import');
 	Route::get('customer/getDeposit/{id}', 'CustomerController@getDeposit');
 	Route::post('customer/add_deposit', 'CustomerController@addDeposit')->name('customer.addDeposit');
@@ -160,12 +165,14 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('importpurchase', 'PurchaseController@importPurchase')->name('purchase.import');
 	Route::post('purchases/deletebyselection', 'PurchaseController@deleteBySelection');
 	Route::resource('purchases', 'PurchaseController');
+	Route::get('purchases/get_commission/{id}', 'PurchaseController@getCommission')->name('purchase.get-commission');
 
 	Route::get('transfers/product_transfer/{id}','TransferController@productTransferData');
 	Route::get('transfers/transfer_by_csv', 'TransferController@transferByCsv');
 	Route::post('importtransfer', 'TransferController@importTransfer')->name('transfer.import');
 	Route::get('transfers/getproduct/{id}', 'TransferController@getProduct')->name('transfer.getproduct');
 	Route::get('transfers/lims_product_search', 'TransferController@limsProductSearch')->name('product_transfer.search');
+	Route::get('transfers/search_material_product', 'TransferController@searchMaterialProduct');
 	Route::post('transfers/deletebyselection', 'TransferController@deleteBySelection');
 	Route::resource('transfers', 'TransferController');
 
@@ -282,6 +289,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('stock-count/finalize', 'StockCountController@finalize')->name('stock-count.finalize');
 	Route::get('stock-count/stockdif/{id}', 'StockCountController@stockDif');
 	Route::get('stock-count/{id}/qty_adjustment', 'StockCountController@qtyAdjustment')->name('stock-count.adjustment');
+	Route::get('stock-count/stockin/list', 'StockCountController@stockInList')->name('stock-count.stockin-list');
 
 	Route::post('holidays/deletebyselection', 'HolidayController@deleteBySelection');
 	Route::get('approve-holiday/{id}', 'HolidayController@approveHoliday')->name('approveHoliday');

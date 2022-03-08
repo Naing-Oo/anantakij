@@ -30,6 +30,14 @@ class Product extends Model
         return $this->belongsToMany('App\Models\Variant', 'product_variants')->withPivot('id', 'item_code', 'additional_price');
     }
 
+    public function scopeActiveRawMaterial($query)
+    {
+        return $query->where([
+            ['is_active', true],
+            ['type', 'raw_material']
+        ]);
+    }
+
     public function scopeActiveStandard($query)
     {
         return $query->where([

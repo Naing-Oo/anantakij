@@ -22,6 +22,7 @@
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{trans('file.Warehouse')}}</th>
+                    <th>{{trans('file.Warehouse Type')}}</th>
                     <th>{{trans('file.Phone Number')}}</th>
                     <th>{{trans('file.Email')}}</th>
                     <th>{{trans('file.Address')}}</th>
@@ -48,6 +49,7 @@
                 <tr data-id="{{$warehouse->id}}">
                     <td>{{$key}}</td>
                     <td>{{ $warehouse->name }}</td>
+                    <td>{{ $warehouse->warehouse_type }}</td>
                     <td>{{ $warehouse->phone}}</td>
                     <td>{{ $warehouse->email}}</td>
                     <td>{{ $warehouse->address}}</td>
@@ -95,6 +97,16 @@
             <label>{{trans('file.name')}} *</label>
             <input type="text" placeholder="Type WareHouse Name..." name="name" required="required" class="form-control">
           </div>
+
+          <div class="form-group">
+              <label>{{trans('file.Warehouse Type') }} *</strong> </label>
+              <select required class="form-control"  name="warehouse_type">
+                  <option>{{ trans('file.Select warehouse-type') }}</option>
+                  <option value="temp">{{ trans('file.Temporary Warehouse') }}</option>
+                  <option value="main">{{ trans('file.Main Warehouse') }}</option>
+              </select>
+          </div>
+
           <div class="form-group">
             <label>{{trans('file.Phone Number')}} *</label>
             <input type="text" name="phone" class="form-control" required>
@@ -131,6 +143,14 @@
           	<input type="hidden" name="warehouse_id">
             <label>{{trans('file.name')}} *</label>
             <input type="text" placeholder="Type WareHouse Name..." name="name" required="required" class="form-control">
+          </div>
+          <div class="form-group">
+              <label>{{trans('file.Warehouse Type') }} *</strong> </label>
+              <select id="warehouse_type" required class="form-control"  name="warehouse_type">
+                  <option>{{ trans('file.Select warehouse-type') }}</option>
+                  <option value="temp">{{ trans('file.Temporary Warehouse') }}</option>
+                  <option value="main">{{ trans('file.Main Warehouse') }}</option>
+              </select>
           </div>
           <div class="form-group">
             <label>{{trans('file.Phone Number')}} *</label>
@@ -225,6 +245,9 @@
 	            $("#editModal input[name='email']").val(data['email']);
 	            $("#editModal textarea[name='address']").val(data['address']);
 	            $("#editModal input[name='warehouse_id']").val(data['id']);
+              
+              // let warehouseType = data['warehouse_type'];
+              // $('#warehouse_type option[value="' + warehouseType + '"]').attr('selected', 'selected');
 
 	        });
 	    });

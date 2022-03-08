@@ -28,8 +28,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>{{trans('file.Supplier')}}</label>
-                                            <select name="supplier_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select supplier...">
+                                            <label>{{trans('file.Supplier')}} *</label>
+                                            <select required name="supplier_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select supplier...">
                                                 @foreach($lims_supplier_list as $supplier)
                                                 <option value="{{$supplier->id}}">{{$supplier->name .' ('. $supplier->company_name .')'}}</option>
                                                 @endforeach
@@ -40,28 +40,96 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>{{trans('file.Purchase Status')}}</label>
-                                            <select name="status" class="form-control">
-                                                <option value="1">{{trans('file.Recieved')}}</option>
-                                                <option value="2">{{trans('file.Partial')}}</option>
-                                                <option value="3">{{trans('file.Pending')}}</option>
-                                                <option value="4">{{trans('file.Ordered')}}</option>
+                                            <label>{{trans('file.Agent')}} *</label>
+                                            <select required name="agent_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select agent...">
+                                                @foreach($agents as $agent)
+                                                <option value="{{$agent->id}}">{{$agent->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{trans('file.Catcher')}} *</label>
+                                            <select required name="catcher_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select catcher...">
+                                                @foreach($catchers as $catcher)
+                                                    <option value="{{$catcher->id}}">{{$catcher->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="purchase_date" class="form-group col-md-6">
+                                        <label>{{trans('file.Purchase Date')}} *</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text"><i class="dripicons-calendar"></i></div>
+                                            </div>
+                                            <input type="text" name="purchase_date" class="form-control" required/>
+                                        </div>
+                                    </div>
+                                    <div id="status" class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{trans('file.Purchase Status')}} *</label>
+                                            <select name="status" class="form-control">
+                                                <option value="1">{{trans('file.Received')}}</option>
+                                                <option value="2">{{trans('file.Partial')}}</option>
+                                                <option value="3">{{trans('file.Pending')}}</option>
+                                                <option value="4">{{trans('file.Ordered')}}</option>
+                                                <option value="5">{{trans('file.Price Agreed')}}</option>
+                                                <option value="6">{{trans('file.Already Queued')}}</option>
+                                                <option value="7">{{trans('file.Cancel')}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
                                             @if($errors->has('extension'))
                                                 <span>
-                                                   <strong>{{ $errors->first('extension') }}</strong>
+                                                    <strong>{{ $errors->first('extension') }}</strong>
                                                 </span>
                                             @endif
                                         </div>
                                     </div>
+                                    <div id="queue_date" class="form-group col-md-6">
+                                        <label>{{trans('file.Queue Date')}} *</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text"><i class="dripicons-calendar"></i></div>
+                                            </div>
+                                            <input type="text" name="queue_date" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="recieved_date" class="form-group col-md-6">
+                                        <label>{{trans('file.Received Date')}} *</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text"><i class="dripicons-calendar"></i></div>
+                                            </div>
+                                            <input type="text" name="recieved_date" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div id="due_date" class="form-group col-md-6">
+                                        <label>{{trans('file.Due Date')}} *</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text"><i class="dripicons-calendar"></i></div>
+                                            </div>
+                                            <input type="text" name="due_date" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                <div class="row">
                                     <div class="col-md-12 mt-3">
-                                        <label>{{trans('file.Select Product')}}</label>
+                                        <label>{{trans('file.Select Product')}} *</label>
                                         <div class="search-box input-group">
                                             <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="Please type product code and select..." class="form-control" />
@@ -77,10 +145,12 @@
                                                     <tr>
                                                         <th>{{trans('file.name')}}</th>
                                                         <th>{{trans('file.Code')}}</th>
-                                                        <th>{{trans('file.Quantity')}}</th>
-                                                        <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th>
+                                                        <th>{{trans('file.Po Qty')}}</th>
+                                                        <th class="recieved-actual-qty d-none">{{trans('file.Actual Qty')}}</th>
+                                                        <th class="recieved-round-qty d-none">{{trans('file.Round Qty')}}</th>
+                                                        <th class="recieved-product-qty d-none">{{trans('file.Received')}}</th>
                                                         <th>{{trans('file.Batch No')}}</th>
-                                                        <th>{{trans('file.Expired Date')}}</th>
+                                                        <th>{{trans('file.Received Date')}}</th>
                                                         <th>{{trans('file.Net Unit Cost')}}</th>
                                                         <th>{{trans('file.Discount')}}</th>
                                                         <th>{{trans('file.Tax')}}</th>
@@ -89,10 +159,12 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                </tbody>
+                                                </tbody>    
                                                 <tfoot class="tfoot active">
                                                     <th colspan="2">{{trans('file.Total')}}</th>
                                                     <th id="total-qty">0</th>
+                                                    <th id="total-actual-qty" class="recieved-actual-qty d-none">0</th>
+                                                    <th id="total-round-qty" class="recieved-round-qty d-none">0</th>
                                                     <th class="recieved-product-qty d-none"></th>
                                                     <th></th>
                                                     <th></th>
@@ -110,6 +182,26 @@
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <input type="hidden" name="total_qty" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="hidden" name="total_actual_qty" value="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="hidden" name="total_round_qty" value="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="hidden" name="agent_commission_rate" value="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="hidden" name="catcher_commission_rate" value="0" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -142,7 +234,8 @@
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-md-4">
+                                    <!-- unuse -->
+                                    <div class="col-md-4 d-none">
                                         <div class="form-group">
                                             <label>{{trans('file.Order Tax')}}</label>
                                             <select class="form-control" name="order_tax_rate">
@@ -153,7 +246,8 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>
                                                 <strong>{{trans('file.Discount')}}</strong>
@@ -161,6 +255,39 @@
                                             <input type="number" name="order_discount" class="form-control" step="any" />
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>
+                                                <strong>{{trans('file.Agent Commission')}}</strong>
+                                            </label>
+                                            <input type="number" name="agent_commission" class="form-control" step="any" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>
+                                                <strong>{{trans('file.Catcher Commission')}}</strong>
+                                            </label>
+                                            <input type="number" name="catcher_commission" class="form-control" step="any" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>
+                                                <strong>{{trans('file.Diff Quantity')}}</strong>
+                                            </label>
+                                            <input type="number" name="diff_qty" class="form-control" step="any" disabled/>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>
+                                                <strong>{{trans('file.Round Quantity')}}</strong>
+                                            </label>
+                                            <input type="number" name="round_qty" class="form-control" step="any"/>
+                                        </div>
+                                    </div> -->
+                                    <!-- unuse -->
                                     <div class="col-md-4 d-none">
                                         <div class="form-group">
                                             <label>
@@ -170,6 +297,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -224,7 +352,7 @@
                     <form>
                         <div class="row modal-element">
                             <div class="col-md-4 form-group">
-                                <label>{{trans('file.Quantity')}}</label>
+                                <label>{{trans('file.Po Quantity')}}</label>
                                 <input type="number" name="edit_qty" class="form-control" step="any">
                             </div>
                             <div class="col-md-4 form-group">
@@ -297,30 +425,197 @@
     var rowindex;
     var customer_group_rate;
     var row_product_cost;
+    var agent_commission;
 
     $('.selectpicker').selectpicker({
         style: 'btn-link',
     });
 
+    $('select[name="status"]').prop('selectedIndex', 2);
+    $('input[name="queue_date"]').prop('disabled', true);
+    $('input[name="recieved_date"]').prop('disabled', true);
+    $('input[name="due_date"]').prop('disabled', true);
+
+    var purchase_date = $('input[name="purchase_date"]');
+    purchase_date.datepicker({
+    format: "dd-mm-yyyy",
+    startDate: "<?php echo date('d-m-Y'); ?>",
+    autoclose: true,
+    todayHighlight: true
+    });
+
+    var queue_date = $('input[name="queue_date"]');
+    queue_date.datepicker({
+    format: "dd-mm-yyyy",
+    startDate: "<?php echo date('d-m-Y'); ?>",
+    autoclose: true,
+    todayHighlight: true
+    });
+
+    var recieved_date = $('input[name="recieved_date"]');
+    recieved_date.datepicker({
+    format: "dd-mm-yyyy",
+    startDate: "<?php echo date('d-m-Y'); ?>",
+    autoclose: true,
+    todayHighlight: true
+    });
+
+    var due_date = $('input[name="due_date"]');
+    due_date.datepicker({
+    format: "dd-mm-yyyy",
+    startDate: "<?php echo date('d-m-Y'); ?>",
+    autoclose: true,
+    todayHighlight: true
+    });
+
+
     $('[data-toggle="tooltip"]').tooltip();
 
+    $('select[name="agent_id"]').on('change', function(){
+        let id = $(this).val();
+        getCommission(id, 'agent');
+    });
+
+    $('select[name="catcher_id"]').on('change', function(){
+        let id = $(this).val();
+        getCommission(id, 'catcher');
+    });
+
+    function getCommission(id, type){
+        $.ajax({
+            url: "{{ url('purchases/get_commission') }}/" + id,
+            type: "get",
+            dataType: "json",
+            data: {
+                "id": id,
+                "type": type
+            },
+            success: function(data){
+                let commission_rate = data.commission_rate;
+                let total_actual_qty = $('input[name="total_actual_qty"]').val();
+                let agent_commission = 0;
+                let catcher_commission = 0;
+                if (type == 'agent'){
+                    $('input[name="agent_commission_rate"]').val(commission_rate);
+                    if (total_actual_qty != 0){
+                        agent_commission = total_actual_qty * commission_rate;
+                        $('input[name="agent_commission"]').val(agent_commission);
+                    }
+                }
+                else{
+                    $('input[name="catcher_commission_rate"]').val(commission_rate);
+                    if (total_actual_qty != 0){
+                        catcher_commission = total_actual_qty * commission_rate;
+                        $('input[name="catcher_commission"]').val(catcher_commission);
+                    }
+                }                
+            },
+            error: function(error){
+                console.log(error);
+            }
+            
+        });
+    }
+
     $('select[name="status"]').on('change', function() {
-        if($('select[name="status"]').val() == 2){
+        if($('select[name="status"]').val() == 2){ // partial
             $(".recieved-product-qty").removeClass("d-none");
+            $(".recieved-actual-qty").addClass("d-none");
+            $(".recieved-round-qty").addClass("d-none");
+            $('input[name="queue_date"]').prop('required', false);           
+            $('input[name="recieved_date"]').prop('required', true);           
+            $('input[name="due_date"]').prop('disabled', false); 
+            $('input[name="queue_date"]').prop('disabled', true);
+            $('input[name="recieved_date"]').prop('disabled', false);
+            $('input[name="due_date"]').prop('disabled', true); 
+            $('input[name="diff_qty"]').val(0); 
+            $('input[name="agent_commission"]').val(0); 
+            $('input[name="catcher_commission"]').val(0); 
+            $('#myTable .qty').prop('readonly', false);  
+            $(".actual_qty").each(function() {
+                $(this).val(0);
+            });    
+            $(".round_qty").each(function() {
+                $(this).val(0);
+            });     
             $(".qty").each(function() {
                 rowindex = $(this).closest('tr').index();
                 $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val($(this).val());
+                checkQuantity($(this).val(), true, 'po_qty');
             });
+            
 
-        }
-        else if(($('select[name="status"]').val() == 3) || ($('select[name="status"]').val() == 4)){
+        }    // peeding, ordered, price agreed
+        else if(($('select[name="status"]').val() == 3) || ($('select[name="status"]').val() == 4) || ($('select[name="status"]').val() == 5)){
             $(".recieved-product-qty").addClass("d-none");
+            $(".recieved-actual-qty").addClass("d-none");
+            $(".recieved-round-qty").addClass("d-none");
+            $('input[name="queue_date"]').prop('required', false);           
+            $('input[name="recieved_date"]').prop('required', false);           
+            $('input[name="due_date"]').prop('required', false);  
+            $('input[name="queue_date"]').prop('disabled', true);
+            $('input[name="recieved_date"]').prop('disabled', true);
+            $('input[name="due_date"]').prop('disabled', true);
+            $('input[name="diff_qty"]').val(0); 
+            $('input[name="agent_commission"]').val(0); 
+            $('input[name="catcher_commission"]').val(0); 
+            $('#myTable .qty').prop('readonly', false);          
+            $(".actual_qty").each(function() {
+                $(this).val(0);
+            });
+            $(".round_qty").each(function() {
+                $(this).val(0);
+            });
             $(".recieved").each(function() {
                 $(this).val(0);
             });
+            $(".qty").each(function() {                
+                rowindex = $(this).closest('tr').index();
+                $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val($(this).val());
+                checkQuantity($(this).val(), true, 'po_qty');
+            });
+            
+        }
+        else if(($('select[name="status"]').val() == 6)){ // already queue
+            $(".recieved-product-qty").addClass("d-none");
+            $(".recieved-actual-qty").addClass("d-none");
+            $(".recieved-round-qty").addClass("d-none");
+            $('input[name="queue_date"]').prop('required', true);
+            $('input[name="recieved_date"]').prop('required', false);           
+            $('input[name="due_date"]').prop('required', false); 
+            $('input[name="queue_date"]').prop('disabled', false);
+            $('input[name="recieved_date"]').prop('disabled', true);
+            $('input[name="due_date"]').prop('disabled', true); 
+            $('input[name="diff_qty"]').val(0); 
+            $('input[name="agent_commission"]').val(0); 
+            $('input[name="catcher_commission"]').val(0); 
+            $('#myTable .qty').prop('readonly', false); 
+            $(".actual_qty").each(function() {
+                $(this).val(0);
+            });
+            $(".round_qty").each(function() {
+                $(this).val(0);
+            });
+            $(".recieved").each(function() {
+                $(this).val(0);
+            });
+            $(".qty").each(function() {                
+                rowindex = $(this).closest('tr').index();
+                $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val($(this).val());
+                checkQuantity($(this).val(), true, 'po_qty');
+            });
         }
         else {
+            $(".recieved-actual-qty").removeClass("d-none");
             $(".recieved-product-qty").addClass("d-none");
+            $(".recieved-round-qty").removeClass("d-none");
+            $('input[name="queue_date"]').prop('required', false); 
+            $('input[name="recieved_date"]').prop('required', true);           
+            $('input[name="due_date"]').prop('required', true);  
+            $('input[name="queue_date"]').prop('disabled', true);
+            $('input[name="recieved_date"]').prop('disabled', false);
+            $('input[name="due_date"]').prop('disabled', false);       
+            $('#myTable .qty').prop('readonly', true);       
             $(".qty").each(function() {
                 rowindex = $(this).closest('tr').index();
                 $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val($(this).val());
@@ -377,14 +672,37 @@
     });
 
 
-    //Change quantity
+   // Change quantity
     $("#myTable").on('input', '.qty', function() {
         rowindex = $(this).closest('tr').index();
         if($(this).val() < 1 && $(this).val() != '') {
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(1);
-        alert("Quantity can't be less than 1");
+            $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(1);
+           alert("Quantity can't be less than 1");
         }
-        checkQuantity($(this).val(), true);
+        checkQuantity($(this).val(), true, 'po_qty');
+    });
+
+
+   // Change actual quantity
+    $("#myTable").on('input', '.actual_qty', function() {
+        rowindex = $(this).closest('tr').index();
+        if($(this).val() < 1 && $(this).val() != '') {
+            $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .actual_qty').val(1);
+            alert("Actual quantity can't be less than 1");
+        }
+        checkQuantity($(this).val(), true, 'actual_qty');
+
+    });
+
+    // Change round quantity
+    $("#myTable").on('input', '.round_qty', function() {
+        rowindex = $(this).closest('tr').index();
+        if($(this).val() < 1 && $(this).val() != '') {
+            $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .round_qty').val(1);
+            alert("Round quantity can't be less than 1");
+        }
+        checkQuantity($(this).val(), true, 'round_qty');
+
     });
 
 
@@ -399,12 +717,11 @@
         unit_name.splice(rowindex, 1);
         unit_operator.splice(rowindex, 1);
         unit_operation_value.splice(rowindex, 1);
-        console.log(product_cost);
         $(this).closest("tr").remove();
         calculateTotal();
     });
 
-    //Edit product
+    // Edit product
     $("table.order-list").on("click", ".edit-product", function() {
     rowindex = $(this).closest('tr').index();
     $(".imei-section").remove();
@@ -442,7 +759,7 @@
         $('select[name="edit_unit"]').append('<option value="' + key + '">' + value + '</option>');
     });
     $('.selectpicker').selectpicker('refresh');
- });
+});
 
     //Update product
     $('button[name="update_btn"]').on("click", function() {
@@ -499,7 +816,7 @@
         unit_name[rowindex] = temp_unit_name.toString() + ',';
         unit_operator[rowindex] = temp_unit_operator.toString() + ',';
         unit_operation_value[rowindex] = temp_unit_operation_value.toString() + ',';
-        checkQuantity(edit_qty, false);
+        checkQuantity(edit_qty, false, 'update');
     });
 
     function productSearch(data) {
@@ -516,6 +833,7 @@
                         rowindex = i;
                         var qty = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()) + 1;
                         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
+                        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .actual_qty').val(qty);
                         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .recieved').val(qty);
                         calculateRowProductData(qty);
                         flag = 0;
@@ -528,14 +846,26 @@
                     temp_unit_name = (data[6]).split(',');
                     cols += '<td>' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
                     cols += '<td>' + data[1] + '</td>';
-                    cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required/></td>';
                     
-                    if($('select[name="status"]').val() == 1)
+                    if($('select[name="status"]').val() == 1){
+                        cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" readonly/></td>';
+                        cols += '<td class="recieved-actual-qty"><input type="number" class="form-control actual_qty" name="actual_qty[]" value="1" step="any"/></td>';
+                        cols += '<td class="recieved-round-qty"><input type="number" class="form-control round_qty" name="round_qty[]" value="1" step="any"/></td>';
                         cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
-                    else if($('select[name="status"]').val() == 2)
+                    }
+                    else if($('select[name="status"]').val() == 2){
+                        cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" readonly /></td>';
+                        cols += '<td class="recieved-actual-qty d-none"><input type="number" class="form-control actual_qty" name="actual_qty[]" value="0" step="any"/></td>';
+                        cols += '<td class="recieved-round-qty d-none"><input type="number" class="form-control round_qty" name="round_qty[]" value="1" step="any"/></td>';
                         cols += '<td class="recieved-product-qty"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
-                    else
+                    }
+                    else {
+                        cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required/></td>';
+                        cols += '<td class="recieved-actual-qty d-none"><input type="number" class="form-control actual_qty" name="actual_qty[]" value="0" step="any"/></td>';
+                        cols += '<td class="recieved-round-qty d-none"><input type="number" class="form-control round_qty" name="round_qty[]" value="1" step="any"/></td>';
                         cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="0" step="any"/></td>';
+                    }
+
                     if(data[10]) {
                         cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" required/></td>';
                         cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" required/></td>';
@@ -550,6 +880,7 @@
                     cols += '<td class="tax"></td>';
                     cols += '<td class="sub-total"></td>';
                     cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>';
+                    // footer
                     cols += '<input type="hidden" class="product-code" name="product_code[]" value="' + data[1] + '"/>';
                     cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
                     cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
@@ -583,7 +914,7 @@
         });
     }
 
-    function checkQuantity(purchase_qty, flag) {
+    function checkQuantity(purchase_qty, flag, qty_type) {
         var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
         var pos = product_code.indexOf(row_product_code);
         var operator = unit_operator[rowindex].split(',');
@@ -593,13 +924,37 @@
         else if(operator[0] == '/')
             total_qty = purchase_qty / operation_value[0];
 
-        $('#editModal').modal('hide');
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val(purchase_qty);
+        $('#editModal').modal('hide');        
         var status = $('select[name="status"]').val();
-        if(status == '1' || status == '2' )
+        if(status == '1' || status == '2' ){
             $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val(purchase_qty);
-        calculateRowProductData(purchase_qty);
+
+            if (qty_type == 'actual_qty'){
+                let actual_qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.actual_qty').val();
+                let round_qty = roundDown(actual_qty); 
+                $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.round_qty').val(round_qty);            
+                calculateRowProductData(round_qty);
+            }
+            else if(qty_type == 'round_qty' || qty_type == 'update'){
+                let round_qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.round_qty').val();
+                calculateRowProductData(round_qty);
+            }
+            else if(qty_type == 'po_qty'){
+                calculateRowProductData(purchase_qty);
+            }
+        }
+        else {
+            if (qty_type == 'update'){
+                $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val(purchase_qty);
+                calculateRowProductData(purchase_qty);
+            }
+            else {
+                calculateRowProductData(purchase_qty);
+            }
+        }
+
     }
+   
 
     function calculateRowProductData(quantity) {
         unitConversion();
@@ -660,6 +1015,52 @@
         $("#total-qty").text(total_qty);
         $('input[name="total_qty"]').val(total_qty);
 
+        //Sum of actual quantity
+         var total_actual_qty = 0;
+        $(".actual_qty").each(function() {
+
+            if ($(this).val() == '') {
+                total_actual_qty += 0;
+            } else {
+                total_actual_qty += parseFloat($(this).val());
+            }
+        });
+        $("#total-actual-qty").text(total_actual_qty);
+        $('input[name="total_actual_qty"]').val(total_actual_qty);
+        let agent_commission_rate = $('input[name="agent_commission_rate"]').val();
+        let catcher_commission_rate = $('input[name="catcher_commission_rate"]').val();
+        let agent_commission = total_actual_qty * agent_commission_rate;
+        let catcher_commission = total_actual_qty * catcher_commission_rate;
+        let status = $('select[name="status"]').val();
+        if (status == '1'){
+            var diff_qty = total_actual_qty - total_qty
+            if ((diff_qty >= 500) || (diff_qty <= -500)){
+                $('input[name="diff_qty"]').attr("style","background-color:red;color:white;");
+            }
+            else{
+               // $('input[name="diff_qty"]').removeAttr("style");
+                $('input[name="diff_qty"]').attr("style","background-color:yellow;color:black;");
+            }
+            $('input[name="diff_qty"]').val(diff_qty);
+            $('input[name="agent_commission"]').val(agent_commission);
+            $('input[name="catcher_commission"]').val(catcher_commission);
+           
+        }
+
+         //Sum of round quantity
+         var total_round_qty = 0;
+        $(".round_qty").each(function() {
+
+            if ($(this).val() == '') {
+                total_round_qty += 0;
+            } else {
+                total_round_qty += parseFloat($(this).val());
+            }
+        });
+        $("#total-round-qty").text(total_round_qty);
+        $('input[name="total_round_qty"]').val(total_round_qty);
+
+
         //Sum of discount
         var total_discount = 0;
         $(".discount").each(function() {
@@ -704,7 +1105,6 @@
 
         item = ++item + '(' + total_qty + ')';
         order_tax = (subtotal - order_discount) * (order_tax / 100);
-        console.log(subtotal);
         var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
 
         $('#item').text(item);
@@ -749,13 +1149,31 @@
         }
     });
 
+
+    function roundDown(value){
+
+        let qty = parseInt(value).toString();        
+        let round_down = 0;
+        if (qty.length == 3){
+            round_down = qty.substring(0, qty.length - 1) + '0';
+            return round_down;
+        }
+        else if(qty.length > 3){
+        round_down = qty.substring(0, qty.length - 2) + '00';
+        return round_down;
+        }
+        else {
+            return qty;
+        }
+    }
+
+    // submit
     $('#purchase-form').on('submit',function(e){
     var rownumber = $('table.order-list tbody tr:last').index();
     if (rownumber < 0) {
         alert("Please insert product to order table!")
         e.preventDefault();
     }
-
     else if($('select[name="status"]').val() != 1)
     {
         flag = 0;
@@ -770,7 +1188,7 @@
             }
         });
         if(!flag){
-            alert('Quantity and Recieved value is same! Please Change Purchase Status or Recieved value');
+            alert('Quantity and recieved value is same! Please Change Purchase Status or recieved value');
             e.preventDefault();
         }
         else

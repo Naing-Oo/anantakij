@@ -13,11 +13,6 @@ use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
@@ -36,8 +31,8 @@ class CategoryController extends Controller
         $columns = array( 
             0 =>'id',
             2 =>'name',
-            3=> 'parent_id',
-            4=> 'is_active',
+            3 => 'parent_id',
+            4 => 'is_active',
         );
         
         $totalData = Category::where('is_active', true)->count();
@@ -132,22 +127,6 @@ class CategoryController extends Controller
         echo json_encode($json_data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->name = preg_replace('/\s+/', ' ', $request->name);
@@ -176,23 +155,7 @@ class CategoryController extends Controller
         return redirect('category')->with('message', 'Category inserted successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+  
     public function edit($id)
     {
         $lims_category_data = Category::findOrFail($id);
@@ -203,13 +166,7 @@ class CategoryController extends Controller
             return $lims_category_data;
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(Request $request, $id)
     {
         $this->validate($request,[
@@ -303,12 +260,7 @@ class CategoryController extends Controller
         return 'Category deleted successfully!';
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function destroy($id)
     {
         $lims_category_data = Category::findOrFail($id);

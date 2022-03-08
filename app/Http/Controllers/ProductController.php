@@ -45,13 +45,15 @@ class ProductController extends Controller
         $columns = array( 
             2 => 'name', 
             3 => 'code',
-            4 => 'brand_id',
-            5 => 'category_id',
-            6 => 'qty',
-            7 => 'unit_id',
-            8 => 'price',
-            9 => 'cost',
-            10 => 'stock_worth'
+            4 => 'type',
+            5 => 'brand_id',
+            6 => 'category_id',
+            7 => 'qty',
+            8 => 'unit_id',
+            9 => 'price',
+            10 => 'cost',
+            11 => 'stock_worth'
+            
         );
         
         $totalData = Product::where('is_active', true)->count();
@@ -84,6 +86,10 @@ class ProductController extends Controller
                         ])
                         ->orWhere([
                             ['products.code', 'LIKE', "%{$search}%"],
+                            ['products.is_active', true]
+                        ])
+                        ->orWhere([
+                            ['products.type', 'LIKE', "%{$search}%"],
                             ['products.is_active', true]
                         ])
                         ->orWhere([
@@ -135,10 +141,26 @@ class ProductController extends Controller
                 $nestedData['image'] = '<img src="'.url('storage/images/product', $product_image).'" height="80" width="80">';
                 $nestedData['name'] = $product->name;
                 $nestedData['code'] = $product->code;
+
+                if ($product->type == "standard"){
+                    $nestedData['type'] = '<div class="badge badge-success">'.trans('file.Standard').'</div>';
+                    $productType = trans('file.Standard');
+                }
+                else if($product->type == "grade_b"){
+                    $nestedData['type'] = '<div class="badge badge-secondary">'.trans('file.Grade B').'</div>';
+                    $productType = trans('file.Grade B');
+                }
+                else {
+                    $nestedData['type'] = '<div class="badge badge-warning">'.trans('file.Raw Material').'</div>';
+                    $productType = trans('file.Raw Material');
+                }
+
+                
                 if($product->brand_id)
                     $nestedData['brand'] = $product->brand->title;
                 else
                     $nestedData['brand'] = "N/A";
+
                 $nestedData['category'] = $product->category->name;
                 $nestedData['qty'] = $product->qty;
                 if($product->unit_id)
@@ -191,7 +213,7 @@ class ProductController extends Controller
                 else    
                     $promotion = "N/A";
 
-                $nestedData['product'] = array( '[ "'.$product->type.'"', ' "'.$product->name.'"', ' "'.$product->code.'"', ' "'.$nestedData['brand'].'"', ' "'.$nestedData['category'].'"',
+                $nestedData['product'] = array( '[ "'.$productType.'"', ' "'.$product->name.'"', ' "'.$product->code.'"', ' "'.$nestedData['brand'].'"', ' "'.$nestedData['category'].'"',
                              ' "'.$nestedData['unit'].'"', ' "'.$product->cost.'"', ' "'.$product->price.'"', ' "'.$tax.'"', ' "'.$tax_method.'"', ' "'.$product->alert_quantity.'"', 
                              ' "'.preg_replace('/\s+/S', " ", $product->product_details).'"', ' "'.$product->id.'"', ' "'.$product->product_list.'"', ' "'.$product->variant_list.'"', 
                              ' "'.$product->qty_list.'"', ' "'.$product->price_list.'"', ' "'.$product->qty.'"', ' "'.$product->image.'"', ' "'.$product->catch_commission_rate.'"', ' "'.$promotion. '"]'
@@ -659,7 +681,7 @@ class ProductController extends Controller
             $additional_price = 0;
         }
 
-        $company_name = DB::table('general_settings')->select('site_title')->first();
+       // $company_name = DB::table('general_settings')->select('site_title')->first(); // get company name
         $product[] = $lims_product_data->name;
         if($lims_product_data->is_variant)
             $product[] = $lims_product_data->item_code;
@@ -674,7 +696,6 @@ class ProductController extends Controller
         $product[] = $lims_product_data->qty;
         $product[] = $lims_product_data->id;
         $product[] = $variant_id;
-        $product[] = $company_name->site_title;
         
         return $product;
     }

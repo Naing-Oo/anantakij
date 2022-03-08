@@ -912,6 +912,12 @@ class RoleController extends Controller
                 $role->givePermissionTo($permission);
             }
         }
+        if($request->has('agent')){
+            $permission = Permission::firstOrCreate(['name' => 'agent']);
+            if(!$role->hasPermissionTo('agent')){
+                $role->givePermissionTo($permission);
+            }
+        }
         else
             $role->revokePermissionTo('catcher_team');
             

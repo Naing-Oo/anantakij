@@ -13,16 +13,16 @@ class Transfer extends Model
 
     public function fromWarehouse()
     {
-    	return $this->belongsTo('App\Warehouse', 'from_warehouse_id');
+    	return $this->belongsTo('App\Models\Warehouse', 'from_warehouse_id');
     }
 
     public function toWarehouse()
     {
-    	return $this->belongsTo('App\Warehouse', 'to_warehouse_id');
+    	return $this->belongsTo('App\Models\Warehouse', 'to_warehouse_id');
     }
 
     public function user()
     {
-    	return $this->belongsTo('App\User', 'user_id');
+    	return $this->belongsTo('App\Models\User', 'user_id');
     }
 }

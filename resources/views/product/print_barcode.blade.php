@@ -71,21 +71,54 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-md-6 mt-2">
+                                    <div class="form-group col-md-8">
                                         <strong>{{trans('file.Print')}}: </strong>&nbsp;
                                         <strong><input type="checkbox" name="name" checked /> {{trans('file.Product Name')}}</strong>&nbsp;
                                         <strong><input type="checkbox" name="price" checked/> {{trans('file.Price')}}</strong>&nbsp;
                                         <strong><input type="checkbox" name="promo_price"/> {{trans('file.Promotional Price')}}</strong>
-                                        <strong><input type="checkbox" name="company_name" checked /> {{trans('file.Company Name')}}</strong>
-                                        <strong><input type="checkbox" name="is_delivery_date" /> {{trans('file.Delivery Date')}}</strong>
                                     </div>
-                                    <div id="delivery_date" class="form-group col-md-3">
+                                    <div id="delivery_date" class="form-group col-md-4">
+                                        <strong><input type="checkbox" name="is_delivery_date" /> {{trans('file.Delivery Date')}}</strong>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text"><i class="dripicons-calendar"></i></div>
                                             </div>
                                             <input type="text" name="delivery_date" class="form-control" />
                                         </div>
+                                    </div>
+                                    <?php
+                                        use App\Models\Biller;
+                                        use App\Models\Customer;
+
+                                        $billers = Biller::where('is_active', true)->get();
+                                        $customers = Customer::select('customers.name')
+                                                                ->join('customer_groups', 'customer_groups.id', 'customers.customer_group_id')
+                                                                ->where([
+                                                                    ['customers.is_active', true],
+                                                                    ['customer_group_id', 3]
+                                                                ])->get();
+
+                                    ?>
+                                </div>
+                                <div class="row">
+                                    <div id="company-name" class="form-group col-md-6">
+                                        <strong><input type="checkbox" name="company_name" checked /> {{trans('file.Company Name')}}</strong>
+                                        <select class="form-control" name="company" >
+                                            <option value="0">Select Company...</option>
+                                            @foreach ($billers as $biller)
+                                                <option value="{{ $biller->name }}">{{ $biller->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div id="seller" class="form-group col-md-6">
+                                        <strong><input type="checkbox" name="is_seller" /> {{trans('file.Reseller Name')}}</strong>
+                                        <select class="form-control" name="seller" >
+                                            <option value="0">Select seller...</option>
+                                            @foreach ($customers as $customer)
+                                                <option value="{{ $customer->name }}">{{ $customer->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -132,7 +165,8 @@
 @push('scripts')
 <script type="text/javascript">
 
-    $("#delivery_date").hide();
+    $('input[name="delivery_date"]').prop('disabled', true);
+    $('select[name="seller"]').prop('disabled', true);
 
     var delivery_date = $('input[name="delivery_date"]');
     delivery_date.datepicker({
@@ -145,11 +179,39 @@
     $('input[name="is_delivery_date"]').on("change", function(e){
         if($(e.currentTarget).is(":checked")){
             $('input[name="delivery_date"]').val($.datepicker.formatDate('dd-mm-yy', new Date()));
-            $("#delivery_date").show(300);
+            $('input[name="delivery_date"]').prop('disabled', false);
         }else{
-            $("#delivery_date").hide(300);
+            $('input[name="delivery_date"]').prop('disabled', true);
+            $('input[name="delivery_date"]').val('');
         }
     });
+
+    $('input[name="company_name"]').on("change", function(e){
+        if($(e.currentTarget).is(":checked")){
+            $('select[name="company"]').prop('disabled', false);
+            $('#company-name .btn-group').removeClass('disabled');
+            $('#company-name button').removeClass('disabled');
+        }else{
+            $('select[name="company"]').prop('disabled', true);
+            $('#company-name .btn-group').addClass('disabled');
+            $('#company-name button').addClass('disabled');
+        }
+    });
+
+    $('input[name="is_seller"]').on("change", function(e){
+        if($(e.currentTarget).is(":checked")){
+            
+            $('select[name="seller"]').prop('disabled', false);
+            $('#seller .btn-group').removeClass('disabled');
+            $('#seller button').removeClass('disabled');
+        }else{
+            $('select[name="seller"]').prop('disabled', true);
+            $('#seller .btn-group').addClass('disabled');
+            $('#seller button').addClass('disabled');
+        }
+    });
+
+
 
     $("ul#product").siblings('a').attr('aria-expanded','true');
     $("ul#product").addClass("show");
@@ -228,8 +290,8 @@
             var code = [];
             var price = [];
             var promo_price = [];
-            var company_name = [];
-            var delivery_date = [];
+           // var company_name = [];
+           // var delivery_date = [];
             var qty = [];
             var barcode_image = [];
             var currency = [];
@@ -240,8 +302,6 @@
                 code.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(2)').text());
                 price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('price'));
                 promo_price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('promo-price'));
-                company_name.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('company-name'));
-                delivery_date.push($('input[name="delivery_date"]').val());
                 currency.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency'));
                 currency_position.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency-position'));
                 qty.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.qty').val());
@@ -305,12 +365,37 @@
                             htmltext += '{{ trans('file.Price')}}: '+price[index]+' '+currency[index]+'<br>';
                     }
 
-                    if($('input[name="company_name"]').is(":checked")) {
-                        htmltext += '{{ trans('file.Company Name')}}: '+company_name[index]+'<br>';
+                    if($('input[name="is_seller"]').is(":checked")) {
+                        let seller = $('select[name="seller"]').val();
+                        if (seller == 0){
+                            alert("{{ trans('file.Please select reseller name') }}");
+                            return back;
+                        }else{
+                            htmltext += '{{ trans('file.Reseller Name')}}: '+ seller +'<br>';
+                        }
+                    }
+                    else {
+                        if($('input[name="company_name"]').is(":checked")) {
+                            let company = $('select[name="company"]').val();
+                            
+                            if (company == 0){
+                                alert("{{ trans('file.Please select company name') }}");
+                                return back;
+                            }else{
+                                htmltext += '{{ trans('file.Company Name')}}: '+ company +'<br>';
+                            }
+                        }
                     }
 
                     if($('input[name="is_delivery_date"]').is(":checked")) {
-                        htmltext += '{{ trans('file.Delivery Date')}}: '+delivery_date[index];
+                        let deliveryDate = $('input[name="delivery_date"]').val();
+                        
+                        if (deliveryDate == ''){
+                            alert("{{ trans('file.Please input delivery date') }}");
+                            return back;
+                        }else{
+                            htmltext += '{{ trans('file.Delivery Date')}}: '+ deliveryDate;
+                        }
                     }
 
                     htmltext +='</td>';

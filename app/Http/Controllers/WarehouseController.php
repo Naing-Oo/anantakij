@@ -9,33 +9,14 @@ use Keygen;
 
 class WarehouseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function index()
     {
         $lims_warehouse_all = Warehouse::where('is_active', true)->get();
         return view('warehouse.create', compact('lims_warehouse_all'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -52,36 +33,14 @@ class WarehouseController extends Controller
         return redirect('warehouse')->with('message', 'Data inserted successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+       
     public function edit($id)
     {
         $lims_warehouse_data = Warehouse::findOrFail($id);
         return $lims_warehouse_data;
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -130,6 +89,7 @@ class WarehouseController extends Controller
 
            $warehouse = Warehouse::firstOrNew([ 'name'=>$data['name'], 'is_active'=>true ]);
            $warehouse->name = $data['name'];
+           $warehouse->warehouse_type = $data['warehouse_type'];
            $warehouse->phone = $data['phone'];
            $warehouse->email = $data['email'];
            $warehouse->address = $data['address'];
@@ -150,12 +110,7 @@ class WarehouseController extends Controller
         return 'Warehouse deleted successfully!';
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function destroy($id)
     {
         $lims_warehouse_data = Warehouse::find($id);
