@@ -21,7 +21,7 @@
     <link rel="preload" href="<?php echo asset('storage/vendor/jquery-timepicker/jquery.timepicker.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="<?php echo asset('storage/vendor/jquery-timepicker/jquery.timepicker.min.css') ?>" rel="stylesheet"></noscript>
     <link rel="preload" href="<?php echo asset('storage/vendor/bootstrap/css/awesome-bootstrap-checkbox.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="<?php echo asset('storage/vendor/bootstrap/css/awesome-bootstrap-checkbox.css') ?>" rel="stylesheet"></noscript>
+  <noscript><link href="<?php echo asset('storage/vendor/bootstrap/css/awesome-bootstrap-checkbox.css') ?>" rel="stylesheet"></noscript>
     <link rel="preload" href="<?php echo asset('storage/vendor/bootstrap/css/bootstrap-select.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="<?php echo asset('storage/vendor/bootstrap/css/bootstrap-select.min.css') ?>" rel="stylesheet"></noscript>
     <!-- Font Awesome CSS-->
@@ -136,7 +136,7 @@
                     <li id="printBarcode-menu"><a href="{{route('product.printBarcode')}}">{{__('file.print_barcode')}}</a></li>
                     @endif
                     @if($adjustment_active)
-                      <li id="stockin-menu"><a href="{{route('stock-count.stockin-list')}}">{{__('file.Stock In')}}</a></li>
+                      <li id="stockin-menu"><a href="{{route('stock-in.index')}}">{{__('file.Stock In')}}</a></li>
                       <li id="adjustment-list-menu"><a href="{{route('qty_adjustment.index')}}">{{trans('file.Adjustment List')}}</a></li>
                       <li id="adjustment-create-menu"><a href="{{route('qty_adjustment.create')}}">{{trans('file.Add Adjustment')}}</a></li>
                     @endif
@@ -523,7 +523,7 @@
                   <li id="monthly-sale-report-menu">
                     <a href="{{url('report/monthly_sale/'.date('Y'))}}">{{trans('file.Monthly Sale')}}</a>
                   </li>
-                  @endif
+                  @endif                 
                   @if($daily_purchase_active)
                   <li id="daily-purchase-report-menu">
                     <a href="{{url('report/daily_purchase/'.date('Y').'/'.date('m'))}}">{{trans('file.Daily Purchase')}}</a>
@@ -563,6 +563,17 @@
                     <input type="hidden" name="start_date" value="{{date('Y-m').'-'.'01'}}" />
                     <input type="hidden" name="end_date" value="{{date('Y-m-d')}}" />
                     <a id="payment-report-link" href="">{{trans('file.Payment Report')}}</a>
+                    {!! Form::close() !!}
+                  </li>
+                  @endif
+                   <!-- need to add permission -->
+                   @if($purchase_report_active)
+                  <li id="catching-report-menu">
+                    {!! Form::open(['route' => 'report.catching', 'method' => 'post', 'id' => 'catching-report-form']) !!}
+                    <input type="hidden" name="start_date" value="{{'01'.'-'.date('m-Y')}}" />
+                    <input type="hidden" name="end_date" value="{{date('d-m-Y')}}" />
+                    <input type="hidden" name="supplier_id" value="0" />
+                    <a id="catching-report-link" href="">{{trans('file.Catching Report')}}</a>
                     {!! Form::close() !!}
                   </li>
                   @endif
@@ -1402,6 +1413,11 @@
       $("a#report-link").click(function(e){
         e.preventDefault();
         $("#product-report-form").submit();
+      });
+
+      $("a#catching-report-link").click(function(e){
+        e.preventDefault();
+        $("#catching-report-form").submit();
       });
 
       $("a#purchase-report-link").click(function(e){

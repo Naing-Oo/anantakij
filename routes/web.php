@@ -164,8 +164,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('purchases/purchase_by_csv', 'PurchaseController@purchaseByCsv');
 	Route::post('importpurchase', 'PurchaseController@importPurchase')->name('purchase.import');
 	Route::post('purchases/deletebyselection', 'PurchaseController@deleteBySelection');
-	Route::resource('purchases', 'PurchaseController');
 	Route::get('purchases/get_commission/{id}', 'PurchaseController@getCommission')->name('purchase.get-commission');
+	
+	Route::resource('purchases', 'PurchaseController');
 
 	Route::get('transfers/product_transfer/{id}','TransferController@productTransferData');
 	Route::get('transfers/transfer_by_csv', 'TransferController@transferByCsv');
@@ -213,6 +214,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('report/profit_loss', 'ReportController@profitLoss')->name('report.profitLoss');
 	Route::get('report/product_report', 'ReportController@productReport')->name('report.product');
 	Route::post('report/product_report_data', 'ReportController@productReportData');
+	Route::post('report/catching', 'ReportController@catchingReport')->name('report.catching');
 	Route::post('report/purchase', 'ReportController@purchaseReport')->name('report.purchase');
 	Route::post('report/sale_report', 'ReportController@saleReport')->name('report.sale');
 	Route::post('report/requisition_report', 'ReportController@requisitionReport')->name('report.requisition');
@@ -285,11 +287,18 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('attendance/deletebyselection', 'AttendanceController@deleteBySelection');
 	Route::resource('attendance', 'AttendanceController');
 
-	Route::resource('stock-count', 'StockCountController');
 	Route::post('stock-count/finalize', 'StockCountController@finalize')->name('stock-count.finalize');
 	Route::get('stock-count/stockdif/{id}', 'StockCountController@stockDif');
 	Route::get('stock-count/{id}/qty_adjustment', 'StockCountController@qtyAdjustment')->name('stock-count.adjustment');
-	Route::get('stock-count/stockin/list', 'StockCountController@stockInList')->name('stock-count.stockin-list');
+	Route::resource('stock-count', 'StockCountController');
+
+	// Stock In
+	Route::get('stock-in/product_stockin/{id}','StockInController@productStockInData');
+	Route::get('stock-in/getproduct/{id}', 'StockInController@getProduct')->name('stock-in.getproduct');
+	Route::get('stock-in/search_material_product', 'StockInController@searchMaterialProduct');
+	Route::get('stock-in/product_search', 'StockInController@ProductSearch');
+	Route::post('stock-in/deletebyselection', 'StockInController@deleteBySelection');
+	Route::resource('stock-in', 'StockInController');
 
 	Route::post('holidays/deletebyselection', 'HolidayController@deleteBySelection');
 	Route::get('approve-holiday/{id}', 'HolidayController@approveHoliday')->name('approveHoliday');

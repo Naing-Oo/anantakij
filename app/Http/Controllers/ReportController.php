@@ -185,6 +185,65 @@ class ReportController extends Controller
 
     }
 
+    public function catchingReport(Request $request)
+    {
+    	$data = $request->all();
+        $start_date = $data['start_date'];
+        $end_date = $data['end_date'];
+        $supplier_id = $data['supplier_id'];
+
+        if ($supplier_id == '0'){
+            $purchases = DB::table('purchases')
+                    ->select(
+                        'purchases.purchase_date',
+                        'suppliers.name',
+                        'suppliers.address',
+                        DB::raw('(select products.name from products where products.id = product_purchases.product_id) as product_name'),
+                        'product_purchases.net_unit_cost as purchase_price',
+                        'product_purchases.qty as total',
+                        DB::raw('(select agents.name from agents where agents.id = purchases.agent_id) as agent_name'),
+                        DB::raw('(select catcher_teams.name from catcher_teams where catcher_teams.id = purchases.catcher_id) as catcher_name'),
+                    )
+                    ->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+                    ->join('product_purchases', 'product_purchases.purchase_id', 'purchases.id')
+                    ->where([
+                        ['purchases.purchase_date','>=', $start_date],
+                        ['purchases.purchase_date','<=', $end_date]
+                    ])
+                    ->orderBy('purchases.purchase_date', 'desc','purchases.supplier_id', 'asc')
+                    ->get();
+        }
+        else {
+            $purchases = DB::table('purchases')
+                    ->select(
+                        'purchases.purchase_date',
+                        'suppliers.name',
+                        'suppliers.address',
+                        DB::raw('(select products.name from products where products.id = product_purchases.product_id) as product_name'),
+                        'product_purchases.net_unit_cost as purchase_price',
+                        'product_purchases.qty as total',
+                        DB::raw('(select agents.name from agents where agents.id = purchases.agent_id) as agent_name'),
+                        DB::raw('(select catcher_teams.name from catcher_teams where catcher_teams.id = purchases.catcher_id) as catcher_name'),
+                    )
+                    ->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+                    ->join('product_purchases', 'product_purchases.purchase_id', 'purchases.id')
+                    ->where('purchases.supplier_id', $supplier_id)
+                    ->where([
+                        ['purchases.purchase_date','>=', $start_date],
+                        ['purchases.purchase_date','<=', $end_date]
+                    ])
+                    ->orderBy('purchases.purchase_date', 'desc','purchases.supplier_id', 'asc')
+                    ->get();
+        }
+
+        
+            // dd($purchases);
+        $lims_supplier_list = Supplier::where('is_active', true)->get();
+
+        return view('report.catching_report',compact('purchases', 'start_date', 'end_date', 'supplier_id', 'lims_supplier_list'));
+    }
+
+
     public function dailyPurchase($year, $month)
     {
         $role = Role::find(Auth::user()->role_id);

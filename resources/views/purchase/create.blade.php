@@ -953,8 +953,7 @@
             }
         }
 
-    }
-   
+    }   
 
     function calculateRowProductData(quantity) {
         unitConversion();

@@ -179,25 +179,6 @@ class StockCountController extends Controller
         
     }
 
-    public function stockInList(){
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('transfers-index')){ // need to 
-            $permissions = Role::findByName($role->name)->permissions;
-            foreach ($permissions as $permission)
-                $all_permission[] = $permission->name;
-            if(empty($all_permission))
-                $all_permission[] = 'dummy text';
-            
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
-                $lims_transfer_all = Transfer::with('fromWarehouse', 'toWarehouse', 'user')->orderBy('id', 'desc')->where('user_id', Auth::id())->get();
-            else
-                $lims_transfer_all = Transfer::with('fromWarehouse', 'toWarehouse', 'user')->orderBy('id', 'desc')->get();
-            return view('transfer.index', compact('lims_transfer_all', 'all_permission'));
-        }
-        else
-            return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
-    }
-
     public function destroy($id)
     {
         //

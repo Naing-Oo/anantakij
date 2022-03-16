@@ -575,6 +575,7 @@ class TransferController extends Controller
         $tax = $data['tax'];
         $total = $data['subtotal'];
         $product_transfer = [];
+        
         foreach ($lims_product_transfer_data as $key => $product_transfer_data) {
             $old_product_id[] = $product_transfer_data->product_id;
             $old_product_variant_id[] = null;

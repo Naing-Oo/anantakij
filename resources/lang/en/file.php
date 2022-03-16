@@ -643,6 +643,7 @@ return [
 	"Queue Date" => "Queue Date",
 	"Purchase Number" => "Purchase Number",
 
+	"Purchase No" => "Purchase No",
 	"Agent" => "Agent",
 	"Add Agent" => "Add Agent",
 	"Import Agent" => "Import Agent",
@@ -662,6 +663,16 @@ return [
 	"Diff Quantity" => "Diff Quantity",
 	"Round Qty" => "Round Qty",
 	"Stock In" => "Stock In",
+	"Stock" => "Stock",
+	"Total Kg" => "Total Kg",
+	"Total Package" => "Total Package",
+	"Total Kilogram" => "Total Kilogram",
+	"Stock In Details" => "Stock In Details",
+	"Catching Report" => "Catching Report",
+	"Choose Supplier" => "Choose Supplier",
+	"All Supplier" => "All Supplier",
+	"Driver" => "Driver",
+	"Car Reg No" => "Car Reg No.",
 	
 
 

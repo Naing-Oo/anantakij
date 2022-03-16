@@ -18,4 +18,9 @@ class ProductPurchase extends Model
     {
     	return $this->belongsTo('App\Models\Purchase', 'purchase_id');
     }
+
+    public function supplier()
+    {
+    	return $this->belongsTo('App\Models\Supplier', 'supplier_id');
+    }
 }

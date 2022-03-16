@@ -65,7 +65,6 @@ class PurchaseController extends Controller
 
 
 // Select Data
-
     public function purchaseData(Request $request)
     {
         $columns = array( 
@@ -289,7 +288,6 @@ class PurchaseController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-
     public function getCommission(Request $request, $id){
         
         $type = $request->type;
@@ -494,10 +492,12 @@ class PurchaseController extends Controller
                     ])->first();
                 }
             }
+            
             //add quantity to product table
             // need to discuss $quantity
             $lims_product_data->qty = $lims_product_data->qty + $quantity;
             $lims_product_data->save();
+            
             //add quantity to warehouse
             if ($lims_product_warehouse_data) {
                 $lims_product_warehouse_data->qty = $lims_product_warehouse_data->qty + $quantity;
@@ -511,6 +511,7 @@ class PurchaseController extends Controller
                 if($lims_product_data->is_variant)
                     $lims_product_warehouse_data->variant_id = $lims_product_variant_data->variant_id;
             }
+
             //added imei numbers to product_warehouse table
             if($imei_numbers[$i]) {
                 if($lims_product_warehouse_data->imei_number)
@@ -975,7 +976,7 @@ class PurchaseController extends Controller
         $lims_payment_data->user_id = Auth::id();
         $lims_payment_data->purchase_id = $lims_purchase_data->id;
         $lims_payment_data->account_id = $data['account_id'];
-        $lims_payment_data->payment_reference = 'ppr-' . date("Ymd") . '-'. date("his");
+        $lims_payment_data->payment_reference = 'PV-' . date("Ymd") . '-'. date("his");
         $lims_payment_data->amount = $data['amount'];
         $lims_payment_data->change = $data['paying_amount'] - $data['amount'];
         $lims_payment_data->paying_method = $paying_method;
@@ -1227,7 +1228,6 @@ class PurchaseController extends Controller
         }
         return 'Purchase deleted successfully!';
     }
-
    
     public function destroy($id)
     {
@@ -1306,4 +1306,8 @@ class PurchaseController extends Controller
             return redirect('purchases')->with('not_permitted', 'Purchase deleted successfully');
         }
     }
+
+    
+
+
 }
